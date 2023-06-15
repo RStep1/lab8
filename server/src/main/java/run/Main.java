@@ -54,7 +54,8 @@ public class Main {
                 new CountByFuelTypeCommand(bufferedDataBase),
                 new FilterLessThanFuelTypeCommand(bufferedDataBase),
                 new RegisterCommand(bufferedDataBase),
-                new LoginCommand(bufferedDataBase));
+                new LoginCommand(bufferedDataBase),
+                new QuitCommand(bufferedDataBase));
         RequestHandler requestHandler = new RequestHandler(invoker);
         Server server = new Server(invoker, port);
         bufferedDataBase.setCommandInvoker(invoker);

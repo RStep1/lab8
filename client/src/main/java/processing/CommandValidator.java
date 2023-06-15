@@ -161,6 +161,7 @@ public class CommandValidator {
             case "remove_all_by_engine_power" -> isCorrect = validateEnginePower(commandArguments);
             case "count_by_fuel_type", "filter_less_than_fuel_type" -> isCorrect = validateFuelType(commandArguments);
             case "register", "login" -> isCorrect = validateUser(commandArguments);
+            case "quit" -> isCorrect = checkNumberOfArguments(commandArguments, 0);
             default -> {
                 MessageHolder.putMessage(String.format(
                         "'%s': No such command", commandArguments.getCommandName()), MessageType.USER_ERROR);

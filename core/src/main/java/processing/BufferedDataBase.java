@@ -493,6 +493,11 @@ public class BufferedDataBase {
         return true;
     }
 
+    public boolean quit(CommandArguments commandArguments) {
+        MessageHolder.putMessage("You are logout", MessageType.OUTPUT_INFO);
+        return true;
+    }
+
     public String getCollectionType() {
         return dataBase.getClass().getName();
     }

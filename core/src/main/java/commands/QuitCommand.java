@@ -5,23 +5,23 @@ import data.Vehicle;
 import processing.BufferedDataBase;
 
 /**
- * Acts as a wrapper for the 'login' command.
+ * Acts as a wrapper for the 'quit' command.
  * Calls the method containing the implementation of this command.
  */
-public class LoginCommand implements Command {
+public class QuitCommand implements Command {
     private BufferedDataBase bufferedDataBase;
-    private static final String NAME = "login";
-    private static final String ARGUMENTS = "<login> <password>";
-    private static final String DESCRIPTION = "user authorization";
+    private static final String NAME = "quit";
+    private static final String ARGUMENTS = "";
+    private static final String DESCRIPTION = "quit from user account";
     private static final int COUNT_OF_ARGUMENTS = 0;
     private static final int COUNT_OF_EXTRA_ARGUMENTS = Vehicle.getCountOfChangeableFields();
-    public LoginCommand(BufferedDataBase bufferedDataBase) {
+    public QuitCommand(BufferedDataBase bufferedDataBase) {
         this.bufferedDataBase = bufferedDataBase;
     }
 
     @Override
     public boolean execute(CommandArguments commandArguments) {
-        return bufferedDataBase.login(commandArguments);
+        return bufferedDataBase.quit(commandArguments);
     }
 
     public static String getName() {

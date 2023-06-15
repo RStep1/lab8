@@ -22,7 +22,7 @@ public class CommandInvoker {
                           Command exitCommand, Command removeGreaterCommand, Command removeLowerCommand,
                           Command removeGreaterKeyCommand, Command removeAllByEnginePowerCommand,
                           Command countByFuelTypeCommand, Command filterLessThanFuelTypeCommand,
-                          Command registerCommand, Command loginCommand) {
+                          Command registerCommand, Command loginCommand, Command quitCommand) {
         commandMap.put(HelpCommand.getName(), helpCommand);
         commandMap.put(InfoCommand.getName(), infoCommand);
         commandMap.put(ShowCommand.getName(), showCommand);
@@ -41,6 +41,7 @@ public class CommandInvoker {
         commandMap.put(FilterLessThanFuelTypeCommand.getName(), filterLessThanFuelTypeCommand);
         commandMap.put(RegisterCommand.getName(), registerCommand);
         commandMap.put(LoginCommand.getName(), loginCommand);
+        commandMap.put(QuitCommand.getName(), quitCommand);
 
         setReferenceFile();
     }

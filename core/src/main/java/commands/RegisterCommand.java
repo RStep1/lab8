@@ -5,7 +5,7 @@ import data.Vehicle;
 import processing.BufferedDataBase;
 
 /**
- * Acts as a wrapper for the 'insert' command.
+ * Acts as a wrapper for the 'register' command.
  * Calls the method containing the implementation of this command.
  */
 public class RegisterCommand implements Command {

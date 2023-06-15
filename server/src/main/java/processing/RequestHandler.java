@@ -3,6 +3,7 @@ package processing;
 import commands.HelpCommand;
 import commands.InsertCommand;
 import commands.LoginCommand;
+import commands.QuitCommand;
 import commands.RegisterCommand;
 import commands.SaveCommand;
 import commands.UpdateCommand;
@@ -42,6 +43,9 @@ public class RequestHandler {
 
         boolean exitStatus = invoker.execute(commandArguments);
 
+        if (this.user != null && commandArguments.getCommandName().equals(QuitCommand.getName())) {
+            this.user = null;
+        }
         if (commandArguments.getCommandName().equals(LoginCommand.getName()) && exitStatus) {
             this.user = commandArguments.getUser();
         }

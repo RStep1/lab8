@@ -13,6 +13,7 @@ exit: terminates the program without saving to a file
 filter_less_than_fuel_type <fuelType>: displays elements whose fuelType field value is less than the given one
 count_by_fuel_type <fuelType>: displays the number of elements whose fuelType field value is equal to the given one
 remove_all_by_engine_power <enginePower>: removes from the collection all elements whose enginePower field value is equivalent to the given one
+quit: quit from user account
 remove_key <key>: removes an element from the collection by its key
 info: displays information about the collection (type, initialization date, number of elements, last saved date))
 register<login> <password>: allows a new user to register
