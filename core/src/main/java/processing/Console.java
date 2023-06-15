@@ -64,17 +64,7 @@ public class Console {
         String username = "", passwordFirst = "", passwordSecond = "";
         try {
             username = enterWhile(scanner, "Enter username: ", "");
-            if (commandName.equals(LoginCommand.getName())) {
-                passwordFirst = enterWhile(scanner, "Enter password: ", "");
-            } else {
-                while (true) {
-                    passwordFirst = enterWhile(scanner, "Enter new password: ", "");
-                    passwordSecond = enterWhile(scanner, "Enter it again to confirm: ", "");
-                    if (passwordFirst.equals(passwordSecond))
-                        break;
-                    Console.println("Passwrods don't match, please try again.");
-                }
-            }
+            passwordFirst = enterWhile(scanner, "Enter password: ", "");
         } catch (NoSuchElementException e) {
             System.exit(0);
         }
