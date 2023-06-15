@@ -61,14 +61,14 @@ public class Console {
     }
 
     public static User enterUsernameAndPassword(Scanner scanner, String commandName) {
-        String username = "", passwordFirst = "", passwordSecond = "";
+        String username = "", password = "";
         try {
             username = enterWhile(scanner, "Enter username: ", "");
-            passwordFirst = enterWhile(scanner, "Enter password: ", "");
+            password = enterWhile(scanner, "Enter password: ", "");
         } catch (NoSuchElementException e) {
             System.exit(0);
         }
-        return new User(username, passwordFirst);
+        return new User(username, password);
     }
 
     private static String enterWhile(Scanner scanner, String displayMessage, String condition) {
