@@ -11,11 +11,17 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import user.Listener;
 
 public class LoginWindowController {
 
     private static final String DATABASE_WINDOW = "../view/DatabaseWindow.fxml";
+
+    private static DatabaseWindowController databaseWindowController;
+    private final String host = "localhost";
+    private final int port = 18022;
 
     @FXML
     private ResourceBundle resources;
@@ -45,14 +51,18 @@ public class LoginWindowController {
         passwordField.clear();
         
         loginSignInButton.getScene().getWindow().hide();
-        FXMLLoader loader = new FXMLLoader(getClass().getResource(DATABASE_WINDOW));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(DATABASE_WINDOW));
         try {
-            loader.load();
+            Parent window = (Pane) fxmlLoader.load();
+            databaseWindowController = fxmlLoader.<DatabaseWindowController>getController();
+            Listener listener = new Listener(host, port, login, password, databaseWindowController);
+            Thread listenerThread = new Thread(listener);
+            listenerThread.start();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        Parent root = loader.getRoot();
+        Parent root = fxmlLoader.getRoot();
         Stage stage = new Stage();
         Scene scene = new Scene(root);
         stage.setScene(scene);
