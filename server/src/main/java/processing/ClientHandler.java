@@ -7,6 +7,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
+import commands.QuitCommand;
 import data.CommandArguments;
 import utility.ServerAnswer;
 
@@ -29,6 +30,8 @@ public class ClientHandler implements Runnable {
             RequestHandler requestHandler = new RequestHandler(invoker);
             while (true) {
                 commandArguments = (CommandArguments) TCPExchanger.read(bufferedInputStream);
+                if (commandArguments.getCommandName().equals(QuitCommand.getName()))
+                    throw new IOException();
                 serverAnswer = requestHandler.processRequest(commandArguments);
                 TCPExchanger.write(bufferedOutputStream, serverAnswer);
                 bufferedOutputStream.flush();

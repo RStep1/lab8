@@ -4,6 +4,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import org.apache.commons.lang3.ObjectUtils.Null;
+
+import commands.QuitCommand;
+import data.CommandArguments;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -30,23 +34,13 @@ public class DatabaseWindowController {
     @FXML
     void quit(ActionEvent event) {
         System.out.println("logout");
-        // loginSignInButton.getScene().getWindow().hide();
-        // FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(MainLauncher.getDatabaseWindowPath()));
-        // try {
-        //     Parent window = (Pane) fxmlLoader.load();
-        //     databaseWindowController = fxmlLoader.<DatabaseWindowController>getController();
-        //     Listener listener = new Listener(host, port, login, password, databaseWindowController);
-        //     Thread listenerThread = new Thread(listener);
-        //     listenerThread.start();
-        // } catch (IOException e) {
-        //     e.printStackTrace();
-        // }
-
-        // Parent root = fxmlLoader.getRoot();
-        // Stage stage = new Stage();
-        // Scene scene = new Scene(root);
-        // stage.setScene(scene);
-        // stage.showAndWait();
+        try {
+            Listener.sendRequest(new CommandArguments(QuitCommand.getName(), null, null, null, null, null));
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        logoutScene();
     }
 
     public void logoutScene() {

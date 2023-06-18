@@ -21,6 +21,8 @@ public class MainLauncher extends Application {
     private static final double SCENE_WIDTH = 800;
     private static final double SCENE_HEIGHT = 600;
     private static Stage primaryStageObjcect;
+    // private static String host;
+    // private static int port;
 
     @Override
     public void start(Stage primaryStage) {
@@ -40,8 +42,18 @@ public class MainLauncher extends Application {
     }
 
     public static void main(String[] args) {
+        // host = args[0];
+        // port = Integer.parseInt(args[1]);
         launch();
     }
+
+    // public static String getHost() {
+    //     return host;
+    // }
+
+    // public static int getPort() {
+    //     return port;
+    // }
 
     public static String getLoginWindowPahth() {
         return LOGIN_WINDOW_PATH;

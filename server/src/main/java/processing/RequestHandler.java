@@ -31,6 +31,8 @@ public class RequestHandler {
         MessageHolder.clearMessages(MessageType.USER_ERROR);
         System.out.println(this.user);
         
+        
+
         if (this.user == null && 
             !(commandArguments.getCommandName().equals(LoginCommand.getName()) || 
             commandArguments.getCommandName().equals(RegisterCommand.getName()) || 

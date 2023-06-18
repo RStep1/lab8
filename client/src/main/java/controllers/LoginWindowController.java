@@ -4,12 +4,14 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import data.User;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
@@ -23,10 +25,11 @@ public class LoginWindowController {
     // private static final String DATABASE_WINDOW = "../view/DatabaseWindow.fxml";
 
     private static DatabaseWindowController databaseWindowController;
-    private final String host = "localhost";
-    private final int port = 18022;
+    private static final String HOST = "localhost";
+    private static final int PORT = 18022;
     private Scene scene;
     private static LoginWindowController instance;
+    private final Listener listener = new Listener(HOST, PORT);
 
     public LoginWindowController() {
         instance = this;
@@ -60,6 +63,7 @@ public class LoginWindowController {
         String password = passwordField.getText();
         if (login.trim().equals("") || password.trim().equals(""))
             return;
+        User user = new User(login, password);
         loginField.clear();
         passwordField.clear();
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(MainLauncher.getDatabaseWindowPath()));
@@ -70,7 +74,8 @@ public class LoginWindowController {
             e.printStackTrace();
         }
         databaseWindowController = fxmlLoader.<DatabaseWindowController>getController();
-        Listener listener = new Listener(host, port, login, password, databaseWindowController);
+        listener.setUser(user);
+        listener.setDatabaseController(databaseWindowController);
         Thread listenerThread = new Thread(listener);
         listenerThread.start();
         this.scene = new Scene(window);
@@ -85,6 +90,12 @@ public class LoginWindowController {
         loginField.clear();
         passwordField.clear();
         System.out.println("register event");
+        try {
+            listener.setConnection();
+        } catch (IOException e) {
+            showErrorDialog("Could not connect to server");
+            System.out.println("Could not connect to server");
+        }
     }
 
     public void showScene() {
@@ -107,10 +118,20 @@ public class LoginWindowController {
         Platform.exit();
         System.exit(0);
     }
+
+    public static void showErrorDialog(String message) {
+        Platform.runLater(()-> {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Warning!");
+            alert.setHeaderText(message);
+            alert.setContentText("Please check for firewall issues and check if the server is running.");
+            alert.showAndWait();
+        });
+    }
     
     @FXML
     void initialize() {
         
-    }    
+    }  
 }
 
