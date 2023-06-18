@@ -2,8 +2,12 @@ package controllers;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
+import commands.LoginCommand;
+import commands.RegisterCommand;
+import data.CommandArguments;
 import data.User;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -17,8 +21,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import processing.TCPExchanger;
 import run.MainLauncher;
 import user.Listener;
+import utility.ServerAnswer;
 
 public class LoginWindowController {
 
@@ -66,6 +72,20 @@ public class LoginWindowController {
         User user = new User(login, password);
         loginField.clear();
         passwordField.clear();
+        ServerAnswer serverAnswer;
+        try {
+            listener.setConnection();
+            Listener.sendRequest(new CommandArguments(LoginCommand.getName(), null, null, null, null, user));
+            serverAnswer = Listener.readServerAnswer();
+        } catch (IOException e) {
+            showErrorDialog("Could not connect to server", "Please check for firewall issues and check if the server is running.");
+            System.out.println("Could not connect to server");
+            return;
+        }
+        if (!serverAnswer.commandExitStatus()) {
+            showErrorDialog(serverAnswer.userErrors().get(0), "Please check your login and password");
+            return;
+        }
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(MainLauncher.getDatabaseWindowPath()));
         Parent window = null;
         try {
@@ -87,14 +107,22 @@ public class LoginWindowController {
         String password = passwordField.getText();
         if (login.trim().equals("") || password.trim().equals(""))
             return;
+        User user = new User(login, password);
         loginField.clear();
         passwordField.clear();
         System.out.println("register event");
+        ServerAnswer serverAnswer = null;
         try {
             listener.setConnection();
+            Listener.sendRequest(new CommandArguments(RegisterCommand.getName(), null, null, null, null, user));
+            serverAnswer = Listener.readServerAnswer();
         } catch (IOException e) {
-            showErrorDialog("Could not connect to server");
+            showErrorDialog("Could not connect to server", "Please check for firewall issues and check if the server is running.");
             System.out.println("Could not connect to server");
+            return;
+        }
+        if (!serverAnswer.commandExitStatus()) {
+            showErrorDialog(serverAnswer.userErrors().get(0), "Please, check your login and password");
         }
     }
 
@@ -119,12 +147,12 @@ public class LoginWindowController {
         System.exit(0);
     }
 
-    public static void showErrorDialog(String message) {
+    public static void showErrorDialog(String message, String contentText) {
         Platform.runLater(()-> {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Warning!");
             alert.setHeaderText(message);
-            alert.setContentText("Please check for firewall issues and check if the server is running.");
+            alert.setContentText(contentText);
             alert.showAndWait();
         });
     }

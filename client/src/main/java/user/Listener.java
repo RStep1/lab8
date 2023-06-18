@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.net.Socket;
 
 
@@ -40,6 +41,9 @@ public class Listener implements Runnable {
             return;
         }
         socket = new Socket(this.host, this.port);
+        bufferedInputStream = new BufferedInputStream(new DataInputStream(this.socket.getInputStream()));
+        bufferedOutputStream = new BufferedOutputStream(new DataOutputStream(this.socket.getOutputStream()));
+        System.out.println("Connection accepted");
     }
 
     public void setUser(User user) {
@@ -52,16 +56,7 @@ public class Listener implements Runnable {
 
     @Override
     public void run() {
-        try {
-            setConnection();
-            LoginWindowController.getInstance().showScene();
-            bufferedInputStream = new BufferedInputStream(new DataInputStream(this.socket.getInputStream()));
-            bufferedOutputStream = new BufferedOutputStream(new DataOutputStream(this.socket.getOutputStream()));
-        } catch (IOException e) {
-            LoginWindowController.showErrorDialog("Could not connect to server");
-            return;
-        }
-        System.out.println("Connection accepted");
+        LoginWindowController.getInstance().showScene();
         try {
             while (this.socket.isConnected()) {
                 ServerAnswer serverAnswer = null;
@@ -76,6 +71,10 @@ public class Listener implements Runnable {
 
     public static void sendRequest(CommandArguments commandArguments) throws IOException {
         TCPExchanger.write(bufferedOutputStream, commandArguments);
+    }
+
+    public static ServerAnswer readServerAnswer() throws IOException {
+        return (ServerAnswer) TCPExchanger.read(bufferedInputStream);
     }
 
     public void stop() {
