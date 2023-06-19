@@ -4,23 +4,40 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.LoginWindowController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="750.0" prefWidth="1400.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.LoginWindowController">
    <children>
-      <AnchorPane layoutX="462.0" layoutY="138.0" prefHeight="309.0" prefWidth="282.0" style="-fx-background-color: #cae7ed; -fx-background-radius: 30;">
+      <AnchorPane layoutX="836.0" layoutY="166.0" prefHeight="417.0" prefWidth="378.0" style="-fx-background-color: #cae7ed; -fx-background-radius: 30;">
          <children>
-            <Button fx:id="loginSignInButton" layoutX="47.0" layoutY="219.0" mnemonicParsing="false" onAction="#signIn" prefHeight="34.0" prefWidth="120.0" style="-fx-background-color: #3b9c78; -fx-background-radius: 6; -fx-border-width: 0.5; -fx-border-color: #000000; -fx-border-radius: 6;" text="Sign in" />
-            <Label layoutX="37.0" layoutY="14.0" prefHeight="46.0" prefWidth="208.0" text="Welcome back">
+            <Label layoutX="87.0" layoutY="17.0" prefHeight="46.0" prefWidth="208.0" text="Welcome back">
                <font>
                   <Font name="System Bold Italic" size="30.0" />
                </font>
             </Label>
-            <TextField fx:id="loginField" layoutX="47.0" layoutY="117.0" prefHeight="33.0" prefWidth="187.0" promptText="login" style="-fx-background-color: #fcfffe;" />
-            <Button fx:id="loginSignUpButton" layoutX="173.0" layoutY="219.0" mnemonicParsing="false" onAction="#signUp" prefHeight="34.0" prefWidth="60.0" style="-fx-background-color: #80a689; -fx-background-radius: 6;" text="Sign up" />
-            <PasswordField fx:id="passwordField" layoutX="47.0" layoutY="168.0" prefHeight="34.0" prefWidth="187.0" promptText="password" style="-fx-background-color: #fcfffe;" />
-            <Label layoutX="28.0" layoutY="59.0" prefHeight="18.0" prefWidth="226.0" text="Please enter your username and password" />
+            <TextField fx:id="loginField" layoutX="80.0" layoutY="174.0" prefHeight="43.0" prefWidth="228.0" promptText="login" style="-fx-background-color: #fcfffe;" />
+            <PasswordField fx:id="passwordField" layoutX="80.0" layoutY="236.0" prefHeight="43.0" prefWidth="228.0" promptText="password" style="-fx-background-color: #fcfffe;" />
+            <Label layoutX="74.0" layoutY="63.0" prefHeight="18.0" prefWidth="226.0" text="Please enter your username and password" />
+            <HBox layoutX="79.0" layoutY="298.0" prefHeight="70.0" prefWidth="228.0" spacing="10.0">
+               <children>
+                  <Button fx:id="loginSignInButton" mnemonicParsing="false" onAction="#signIn" prefHeight="56.0" prefWidth="147.0" style="-fx-background-color: #3b9c78; -fx-background-radius: 6; -fx-border-width: 0.5; -fx-border-color: #000000; -fx-border-radius: 6;" text="Sign in" />
+                  <Button fx:id="loginSignUpButton" mnemonicParsing="false" onAction="#signUp" prefHeight="56.0" prefWidth="77.0" style="-fx-background-color: #80a689; -fx-background-radius: 6;" text="Sign up" />
+               </children>
+            </HBox>
+            <ImageView fitHeight="33.0" fitWidth="27.0" layoutX="47.0" layoutY="182.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../images/user_icon.png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="29.0" fitWidth="27.0" layoutX="47.0" layoutY="244.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../images/lock_icon.png" />
+               </image>
+            </ImageView>
          </children>
       </AnchorPane>
    </children>

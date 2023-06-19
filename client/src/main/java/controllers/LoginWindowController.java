@@ -122,15 +122,15 @@ public class LoginWindowController {
             return;
         }
         if (!serverAnswer.commandExitStatus()) {
-            showErrorDialog(serverAnswer.userErrors().get(0), "Please, check your login and password");
+            showErrorDialog(serverAnswer.userErrors().get(0), "Please, check your login");
         }
     }
 
     public void showScene() {
         Platform.runLater(() -> {
             Stage stage = (Stage) passwordField.getScene().getWindow();
-            stage.setWidth(800);
-            stage.setHeight(600);
+            stage.setWidth(MainLauncher.getSceneWidth());
+            stage.setHeight(MainLauncher.getSceneHeight());
             stage.setOnCloseRequest((WindowEvent e) -> {
                 Platform.exit();
                 System.exit(0);

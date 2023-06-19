@@ -18,8 +18,8 @@ public class MainLauncher extends Application {
     private static final String LOGIN_WINDOW_PATH = "../view/LoginWindow.fxml";
     private static final String DATABASE_WINDOW_PATH = "../view/DatabaseWindow.fxml";
     private static final String VISUALIZATION_WINDOW_PATH = "../view/VisualizationWindow.fxml";
-    private static final double SCENE_WIDTH = 800;
-    private static final double SCENE_HEIGHT = 600;
+    private static final double SCENE_WIDTH = 1400;
+    private static final double SCENE_HEIGHT = 750;
     private static Stage primaryStageObjcect;
     // private static String host;
     // private static int port;
@@ -68,6 +68,14 @@ public class MainLauncher extends Application {
 
     public static Stage getPrimaryStage() {
         return primaryStageObjcect;
+    }
+
+    public static double getSceneWidth() {
+        return SCENE_WIDTH;
+    }
+
+    public static double getSceneHeight() {
+        return SCENE_HEIGHT;
     }
     
 }
