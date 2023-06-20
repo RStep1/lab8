@@ -52,6 +52,7 @@ public class Listener implements Runnable {
 
     public void setDatabaseController(DatabaseWindowController databaseWindowController) {
         this.databaseWindowController = databaseWindowController;
+        this.databaseWindowController.setUsernameLabel(this.user.getLogin());
     }
 
     @Override

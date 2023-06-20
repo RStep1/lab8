@@ -293,7 +293,7 @@ public class BufferedDataBase {
      * @return Command exit status.
      */
     public boolean removeGreater(CommandArguments commandArguments) {
-        return removeAllByDistanceTravelled(commandArguments, RemoveGreaterCommand.getName(), RemoveMode.REMOVE_GREATER);
+        return removeAllByDistanceTravelled(commandArguments, RemoveGreaterCommand.getName(), RemoveMode.GREATER_THEN_DISTANCE_TRAVELLED);
     }
 
     /**
@@ -303,7 +303,7 @@ public class BufferedDataBase {
      * @return Command exit status.
      */
     public boolean removeLower(CommandArguments commandArguments) {
-        return removeAllByDistanceTravelled(commandArguments, RemoveLowerCommand.getName(), RemoveMode.REMOVE_LOWER);
+        return removeAllByDistanceTravelled(commandArguments, RemoveLowerCommand.getName(), RemoveMode.LOWER_THEN_DISTANCE_TRAVELLED);
     }
 
     /**
@@ -325,7 +325,7 @@ public class BufferedDataBase {
         }
         Set<Long> filteredKeys = dataBase.keySet().stream()
                 .filter(key -> dataBase.get(key).getUsername().equals(commandArguments.getUser().getLogin()))
-                .filter(key -> (removeMode == RemoveMode.REMOVE_GREATER ?
+                .filter(key -> (removeMode == RemoveMode.GREATER_THEN_DISTANCE_TRAVELLED ?
                         dataBase.get(key).getDistanceTravelled() > userDistanceTravelled :
                         dataBase.get(key).getDistanceTravelled() < userDistanceTravelled))
                         .collect(Collectors.toSet());

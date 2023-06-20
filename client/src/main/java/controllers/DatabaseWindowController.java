@@ -1,16 +1,31 @@
 package controllers;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatterBuilder;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
+
+import javax.swing.text.html.parser.Element;
 
 import commands.QuitCommand;
 import data.CommandArguments;
+import data.CountMode;
+import data.FilterMode;
+import data.FuelType;
 import data.TableRowVehicle;
+import data.VehicleType;
 import javafx.application.Platform;
+import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -22,13 +37,17 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import mods.RemoveMode;
 import run.MainLauncher;
 import user.Listener;
 
 public class DatabaseWindowController {
 
     @FXML
-    private ResourceBundle resources;
+    private Label usernameLabel;
+
+    @FXML
+    private ResourceBundle currentBundle;
 
     @FXML
     private URL location;
@@ -94,16 +113,16 @@ public class DatabaseWindowController {
     private TextField nameField;
 
     @FXML
-    private Button onClearButtonClick;
+    private Button clearButton;
 
     @FXML
-    private Button onCountButtonClick;
+    private Button countButton;
 
     @FXML
-    private Button onFilterButtonClick;
+    private Button filterButton;
 
     @FXML
-    private Button onRemoveButtonClick;
+    private Button removeButton;
 
     @FXML
     private TableColumn<TableRowVehicle, String> ownerColumn;
@@ -112,7 +131,7 @@ public class DatabaseWindowController {
     private ChoiceBox<String> removeByChoiceBox;
 
     @FXML
-    private Label tableRecords;
+    private Label tableRecordsLabel;
 
     @FXML
     private TextField valueToRemove;
@@ -142,32 +161,47 @@ public class DatabaseWindowController {
     private TextField yField;
 
     @FXML
-    void onClearButtonClick(ActionEvent event) {
-
+    public void onClearButtonClick(ActionEvent event) {
+        System.out.println("clear");
     }
 
     @FXML
-    void onInfoButtonClick(ActionEvent event) {
-
+    public void onInfoButtonClick(ActionEvent event) {
+        System.out.println("info");
     }
 
     @FXML
-    void onInsertButtonClick(ActionEvent event) {
-
+    public void onInsertButtonClick(ActionEvent event) {
+        System.out.println("insert");
     }
 
     @FXML
-    void onUpdateButtonClick(ActionEvent event) {
-
+    public void onUpdateButtonClick(ActionEvent event) {
+        System.out.println("udpate");
     }
 
     @FXML
-    void onVisualizeButtonClick(ActionEvent event) {
-
+    public void onVisualizeButtonClick(ActionEvent event) {
+        System.out.println("visualize");
     }
 
     @FXML
-    void quit(ActionEvent event) {
+    public void onCountButtonClick(ActionEvent event) {
+        System.out.println("count");
+    }
+
+    @FXML
+    public void onFilterButtonClick(ActionEvent event) {
+        System.out.println("filter");
+    }
+
+    @FXML
+    public void onRemoveButtonClick(ActionEvent event) {
+        System.out.println("remove");
+    }
+
+    @FXML
+    public void quit(ActionEvent event) {
         System.out.println("logout");
         try {
             Listener.sendRequest(new CommandArguments(QuitCommand.getName(), null, null, null, null, null));
@@ -194,8 +228,35 @@ public class DatabaseWindowController {
         });
     }
 
+    public void setUsernameLabel(String username) {
+        this.usernameLabel.setText(username);
+        System.out.println(usernameLabel.getText());
+    }
+
     @FXML
-    void initialize() {
+    public void initialize() {
+        this.countLabel.setText("0");
+        this.lastModifiedTimeLabel.setText("no changes yet");
+        this.tableRecordsLabel.setText("0");
+
+
+        initChoiceBoxes();
+        // Arrays.asList(CountMods.values()).stream().forEach(x -> countByChoiceBox.getItems().add(x.getName()));
         
+        // this.countLabel.setText(currentBundle.getString("984359"));
+    }
+
+
+    private void initChoiceBoxes() {
+        for (CountMode countMode : CountMode.values()) 
+            countByChoiceBox.getItems().add(countMode.getName());
+        for (FilterMode filterMode : FilterMode.values())
+            filterByChoiceBox.getItems().add(filterMode.getName());
+        for (RemoveMode removeMode : RemoveMode.values())
+            removeByChoiceBox.getItems().add(removeMode.getName());
+        for (VehicleType vehicleType : VehicleType.values())
+            vehicleTypeChoice.getItems().add(vehicleType.toString());
+        for (FuelType fuelType : FuelType.values())
+            fuelTypeChoice.getItems().add(fuelType.toString());
     }
 }

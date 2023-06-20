@@ -254,7 +254,7 @@ public class DatabaseCollectionManager {
     }
 
     public void deleteByDistanceTravelled(long distanceTravelled, String login, RemoveMode removeMode) throws SQLException {
-        if (removeMode == RemoveMode.REMOVE_GREATER) {
+        if (removeMode == RemoveMode.GREATER_THEN_DISTANCE_TRAVELLED) {
             deleteGreaterByDistanceTravelled(distanceTravelled, login);
         } else {
             deleteLowerByDistanceTravelled(distanceTravelled, login);

@@ -64,7 +64,7 @@ public class LoginWindowController {
     private Button loginSignUpButton;
 
     @FXML
-    void signIn(ActionEvent event) {
+    public void signIn(ActionEvent event) {
         String login = loginField.getText();
         String password = passwordField.getText();
         if (login.trim().equals("") || password.trim().equals(""))
@@ -94,6 +94,7 @@ public class LoginWindowController {
             e.printStackTrace();
         }
         databaseWindowController = fxmlLoader.<DatabaseWindowController>getController();
+        // databaseWindowController.setUsernameLabel(user.getLogin());
         listener.setUser(user);
         listener.setDatabaseController(databaseWindowController);
         Thread listenerThread = new Thread(listener);
@@ -102,7 +103,7 @@ public class LoginWindowController {
     }
 
     @FXML
-    void signUp(ActionEvent event) {
+    public void signUp(ActionEvent event) {
         String login = loginField.getText();
         String password = passwordField.getText();
         if (login.trim().equals("") || password.trim().equals(""))
@@ -110,7 +111,6 @@ public class LoginWindowController {
         User user = new User(login, password);
         loginField.clear();
         passwordField.clear();
-        System.out.println("register event");
         ServerAnswer serverAnswer = null;
         try {
             listener.setConnection();
@@ -158,7 +158,7 @@ public class LoginWindowController {
     }
     
     @FXML
-    void initialize() {
+    public void initialize() {
         
     }  
 }
