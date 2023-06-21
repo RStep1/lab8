@@ -55,6 +55,7 @@ import processing.TCPExchanger;
 import run.MainLauncher;
 import user.Listener;
 import utility.AlertCaller;
+import utility.ServerAnswer;
 
 public class DatabaseWindowController {
 
@@ -262,21 +263,22 @@ public class DatabaseWindowController {
 
     @FXML
     public void initialize() {
-
-        initializeLabels();
-        initializeChoiceBoxes();
-        initializeTable();
-    }
-
-
-    private void initializeTable() {
-        vehicleHashtable = loadColletion();
         try {
             Listener.sendRequest(new ClientRequest(ShowCommand.getName(), LoginWindowController.getInstance().getUser()));
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            AlertCaller.showErrorDialog("Connection lost", "Please check for firewall issues and check if the server is running.");
+            System.out.println("Connection lost");
+            logoutScene();
         };
+        initializeLabels();
+        initializeChoiceBoxes();
+        
+    }
+
+
+    public void initializeTableEvent(ServerAnswer serverAnswer) {
+        vehicleHashtable = serverAnswer.database();
+        System.out.println("database size = " + vehicleHashtable.size());
         ObservableList<TableRowVehicle> vehicleObservableList = FXCollections.observableArrayList();
         Set<Long> keySet = vehicleHashtable.keySet();
         for (Long key : keySet) {
@@ -309,14 +311,6 @@ public class DatabaseWindowController {
         ownerColumn.setCellValueFactory(new PropertyValueFactory<TableRowVehicle, String>("owner"));
 
         vehicleTable.setItems(vehicleObservableList);
-    }
-
-    private Hashtable<Long, Vehicle> loadColletion() {
-        Hashtable<Long, Vehicle> hashtable = new Hashtable<>();
-        Vehicle vehicle = new Vehicle(245, "aaf", new Coordinates(254, 5), "asdoifj", 4452, 2346, VehicleType.BOAT, FuelType.ALCOHOL);
-        vehicle.setUsername("username");
-        hashtable.put(1l, vehicle);
-        return hashtable;
     }
 
     private void initializeLabels() {

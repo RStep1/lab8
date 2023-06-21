@@ -68,7 +68,7 @@ public class Listener implements Runnable {
                 // System.out.println(serverAnswer);
                 switch (serverAnswer.eventType()) {
                     case DATABASE_INIT -> {
-                        // databaseWindowController.initCollection()
+                        databaseWindowController.initializeTableEvent(serverAnswer);
                         System.out.println("init");}
                     case INSERT -> {
                         System.out.println("insert");}
@@ -105,7 +105,7 @@ public class Listener implements Runnable {
             bufferedInputStream.close();
             bufferedOutputStream.close();
         } catch (IOException e) {
-            // e.printStackTrace();
+            e.printStackTrace();
         }
     }
 }
