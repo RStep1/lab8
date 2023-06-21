@@ -1,4 +1,4 @@
-package utility;
+package database;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -6,6 +6,7 @@ import java.sql.SQLException;
 
 import data.User;
 import processing.Console;
+import utility.SHA256Hashing;
 
 public class DatabaseUserManager {
     private final DatabaseHandler databaseHandler;

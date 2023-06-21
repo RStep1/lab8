@@ -1,4 +1,4 @@
-package utility;
+package database;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,6 +12,7 @@ import data.Vehicle;
 import data.VehicleType;
 import mods.RemoveMode;
 import processing.Console;
+import utility.ValueTransformer;
 
 
 public class DatabaseCollectionManager {
