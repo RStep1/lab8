@@ -2,6 +2,7 @@ package commands;
 
 import data.ClientRequest;
 import processing.BufferedDataBase;
+import utility.ServerAnswer;
 
 /**
  * Acts as a wrapper for the 'remove lower' command.
@@ -22,7 +23,7 @@ public class RemoveLowerCommand implements Command {
     }
 
     @Override
-    public boolean execute(ClientRequest commandArguments) {
+    public ServerAnswer execute(ClientRequest commandArguments) {
         return bufferedDataBase.removeLower(commandArguments);
     }
 

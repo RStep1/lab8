@@ -2,6 +2,7 @@ package commands;
 
 import data.ClientRequest;
 import processing.BufferedDataBase;
+import utility.ServerAnswer;
 
 /**
  * Acts as a wrapper for the 'remove key' command.
@@ -20,7 +21,7 @@ public class RemoveKeyCommand implements Command {
     }
 
     @Override
-    public boolean execute(ClientRequest commandArguments) {
+    public ServerAnswer execute(ClientRequest commandArguments) {
         return bufferedDataBase.removeKey(commandArguments);
     }
 

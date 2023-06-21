@@ -59,6 +59,10 @@ public class ClientRequest implements Serializable {
         return extraArguments;
     }
 
+    public RemoveMode getRemoveMode() {
+        return removeMode;
+    }
+
     public ExecuteMode getExecuteMode() {
         return executeMode;
     }

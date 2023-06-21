@@ -3,6 +3,7 @@ package processing;
 import commands.*;
 import data.ClientRequest;
 import utility.FileHandler;
+import utility.ServerAnswer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -64,7 +65,7 @@ public class CommandInvoker {
     *                        arguments that are characteristics of the collection class and execution mode.
     * @return Command exit status.
     */
-    public boolean execute(ClientRequest clientRequest) {
+    public ServerAnswer execute(ClientRequest clientRequest) {
         return commandMap.get(clientRequest.getCommandName()).execute(clientRequest);
     }
 }

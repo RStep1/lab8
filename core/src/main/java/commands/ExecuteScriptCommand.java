@@ -1,7 +1,9 @@
 package commands;
 
 import data.ClientRequest;
+import mods.EventType;
 import processing.BufferedDataBase;
+import utility.ServerAnswer;
 
 
 /**
@@ -22,8 +24,8 @@ public class ExecuteScriptCommand implements Command {
     }
 
     @Override
-    public boolean execute(ClientRequest commandArguments) {
-        return true;
+    public ServerAnswer execute(ClientRequest commandArguments) {
+        return new ServerAnswer(null, true);
     }
 
     public static String getName() {

@@ -8,5 +8,6 @@ public enum EventType {
     CLEAR,
     QUIT,
     LOGIN,
-    REGISTER;
+    REGISTER,
+    INFO;
 }

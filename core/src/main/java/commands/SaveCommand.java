@@ -2,6 +2,7 @@ package commands;
 
 import data.ClientRequest;
 import processing.BufferedDataBase;
+import utility.ServerAnswer;
 
 /**
  * Acts as a wrapper for the 'save' command.
@@ -20,7 +21,7 @@ public class SaveCommand implements Command {
     }
 
     @Override
-    public boolean execute(ClientRequest commandArguments) {
+    public ServerAnswer execute(ClientRequest commandArguments) {
         return bufferedDataBase.save(commandArguments);
     }
 

@@ -3,6 +3,7 @@ package commands;
 import data.ClientRequest;
 import data.Vehicle;
 import processing.BufferedDataBase;
+import utility.ServerAnswer;
 
 /**
  * Acts as a wrapper for the 'login' command.
@@ -20,7 +21,7 @@ public class LoginCommand implements Command {
     }
 
     @Override
-    public boolean execute(ClientRequest commandArguments) {
+    public ServerAnswer execute(ClientRequest commandArguments) {
         return bufferedDataBase.login(commandArguments);
     }
 

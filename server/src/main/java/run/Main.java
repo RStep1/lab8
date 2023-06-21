@@ -9,10 +9,10 @@ import processing.CommandInvoker;
 import java.util.Scanner;
 
 import commands.*;
+import database.DatabaseCollectionManager;
+import database.DatabaseHandler;
+import database.DatabaseUserManager;
 import host.Server;
-import utility.DatabaseCollectionManager;
-import utility.DatabaseHandler;
-import utility.DatabaseUserManager;
 import utility.FileHandler;
 import utility.MessageHolder;
 import utility.ScriptGenerator;

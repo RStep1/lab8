@@ -3,6 +3,7 @@ package commands;
 import data.ClientRequest;
 import data.Vehicle;
 import processing.BufferedDataBase;
+import utility.ServerAnswer;
 
 /**
  * Acts as a wrapper for the 'update' command.
@@ -22,7 +23,7 @@ public class UpdateCommand implements Command {
     }
 
     @Override
-    public boolean execute(ClientRequest commandArguments) {
+    public ServerAnswer execute(ClientRequest commandArguments) {
         return bufferedDataBase.update(commandArguments);
     }
 

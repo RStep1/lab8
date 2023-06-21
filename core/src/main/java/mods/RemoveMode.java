@@ -5,7 +5,10 @@ package mods;
  */
 public enum RemoveMode {
     GREATER_THEN_DISTANCE_TRAVELLED("greater then distance travelled", ">"),
-    LOWER_THEN_DISTANCE_TRAVELLED("lower then distance travelled", "<");
+    LOWER_THEN_DISTANCE_TRAVELLED("lower then distance travelled", "<"),
+    GREATER_KEY("greater then key", ">"),
+    BY_ENGINE_POWER("by engine power", "="),
+    BY_KEY("by key", "=");
 
     private final String name;
     private final String symbol;

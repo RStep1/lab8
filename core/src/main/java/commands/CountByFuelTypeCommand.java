@@ -2,6 +2,7 @@ package commands;
 
 import data.ClientRequest;
 import processing.BufferedDataBase;
+import utility.ServerAnswer;
 
 
 /**
@@ -21,7 +22,7 @@ public class CountByFuelTypeCommand implements Command {
     }
 
     @Override
-    public boolean execute(ClientRequest commandArguments) {
+    public ServerAnswer execute(ClientRequest commandArguments) {
         return bufferedDataBase.countByFuelType(commandArguments);
     }
 
