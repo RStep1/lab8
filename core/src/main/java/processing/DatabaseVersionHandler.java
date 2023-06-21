@@ -3,17 +3,20 @@ package processing;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class DatabaseVersionHandler {
-    private static final AtomicLong databaseVersion = new AtomicLong(0);
+    private static final AtomicLong DATABASE_VERSION = new AtomicLong(0);
 
     public static long getDatabaseVersion() {
-        return databaseVersion.get();
+        return DATABASE_VERSION.get();
     }
 
-    public static void setNewVersion() {
-        databaseVersion.incrementAndGet();
+    public static synchronized void setNewVersion() {
+        DATABASE_VERSION.incrementAndGet();
+        if (DATABASE_VERSION.get() == Long.MAX_VALUE) {
+            DATABASE_VERSION.set(0);
+        }
     }
 
     public static synchronized boolean compareVersions(long userVersion) {
-        return databaseVersion.get() == userVersion;
+        return DATABASE_VERSION.get() == userVersion;
     }
 }
