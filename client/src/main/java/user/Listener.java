@@ -36,7 +36,7 @@ public class Listener implements Runnable {
     }
     
     public void setConnection() throws IOException {
-        if (socket != null) {
+        if (isConnected()) {
             System.out.println("Socket already connected");
             return;
         }
@@ -44,6 +44,10 @@ public class Listener implements Runnable {
         bufferedInputStream = new BufferedInputStream(new DataInputStream(this.socket.getInputStream()));
         bufferedOutputStream = new BufferedOutputStream(new DataOutputStream(this.socket.getOutputStream()));
         System.out.println("Connection accepted");
+    }
+
+    public boolean isConnected() {
+        return socket != null;
     }
 
     public void setUser(User user) {
@@ -57,27 +61,32 @@ public class Listener implements Runnable {
 
     @Override
     public void run() {
-        LoginWindowController.getInstance().showScene();
         try {
             while (this.socket.isConnected()) {
                 ServerAnswer serverAnswer = null;
                 serverAnswer = (ServerAnswer) TCPExchanger.read(bufferedInputStream);
-                System.out.println(serverAnswer);
+                // System.out.println(serverAnswer);
                 switch (serverAnswer.eventType()) {
                     case DATABASE_INIT -> {
                         // databaseWindowController.initCollection()
                         System.out.println("init");}
-                    case INSERT -> System.out.println("insert");
+                    case INSERT -> {
+                        System.out.println("insert");}
                     case UPDATE -> System.out.println("update");
                     case CLEAR -> System.out.println("clear");
                     case REMOVE -> System.out.println("remove");
                     case QUIT -> System.out.println("quit");
-                    case LOGIN -> System.out.println("login");
-                    case REGISTER -> System.out.println("register");
+                    case LOGIN -> {
+                        System.out.println("LOGIN EVENT");
+                        LoginWindowController.getInstance().loginEvent(serverAnswer);}
+                    case REGISTER -> LoginWindowController.getInstance().registerEvent(serverAnswer);
+                    case INFO -> {
+                        databaseWindowController.func("INSERT^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+                        System.out.println("some info");}
                 }
             }
         } catch (IOException | NullPointerException e) {
-            // e.printStackTrace();
+            e.printStackTrace();
             databaseWindowController.logoutScene();
         }
     }

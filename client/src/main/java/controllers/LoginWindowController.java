@@ -24,11 +24,10 @@ import javafx.stage.WindowEvent;
 import processing.TCPExchanger;
 import run.MainLauncher;
 import user.Listener;
+import utility.AlertCaller;
 import utility.ServerAnswer;
 
 public class LoginWindowController {
-
-    // private static final String DATABASE_WINDOW = "../view/DatabaseWindow.fxml";
     private User user;
     private static DatabaseWindowController databaseWindowController;
     private static final String HOST = "localhost";
@@ -63,27 +62,48 @@ public class LoginWindowController {
     @FXML
     private Button loginSignUpButton;
 
-    @FXML
-    public void signIn(ActionEvent event) {
-        String login = loginField.getText();
-        String password = passwordField.getText();
-        if (login.trim().equals("") || password.trim().equals(""))
-            return;
-        this.user = new User(login, password);
-        loginField.clear();
-        passwordField.clear();
-        ServerAnswer serverAnswer;
+    private void connectToServer() {
         try {
             listener.setConnection();
-            Listener.sendRequest(new ClientRequest(LoginCommand.getName(), user));
-            serverAnswer = Listener.readServerAnswer();
         } catch (IOException e) {
-            showErrorDialog("Could not connect to server", "Please check for firewall issues and check if the server is running.");
+            AlertCaller.showErrorDialog("Could not connect to server", "Please check for firewall issues and check if the server is running.");
             System.out.println("Could not connect to server");
             return;
         }
+        Thread listenerThread = new Thread(listener);
+        listenerThread.start();
+    }
+
+    private User processUser() {
+        String login = loginField.getText();
+        String password = passwordField.getText();
+        if (login.trim().equals("") || password.trim().equals(""))
+            return null;
+        User newUser = new User(login, password);
+        loginField.clear();
+        passwordField.clear();
+        return newUser;
+    }
+
+    @FXML
+    public void signIn(ActionEvent event) {
+        User newUser = processUser();
+        if (newUser == null) return;
+        this.user = newUser;
+
+        if (!listener.isConnected())
+            connectToServer();
+        try {
+            Listener.sendRequest(new ClientRequest(LoginCommand.getName(), user));
+        } catch (IOException e) {
+            AlertCaller.showErrorDialog("Could not connect to server", "Please check for firewall issues and check if the server is running.");
+            System.out.println("Could not connect to server");
+        }
+    }
+
+    public void loginEvent(ServerAnswer serverAnswer) {
         if (!serverAnswer.commandExitStatus()) {
-            showErrorDialog(serverAnswer.userErrors().get(0), "Please check your login and password");
+            AlertCaller.showErrorDialog(serverAnswer.userErrors().get(0), "Please check your login and password");
             return;
         }
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(MainLauncher.getDatabaseWindowPath()));
@@ -96,33 +116,32 @@ public class LoginWindowController {
         databaseWindowController = fxmlLoader.<DatabaseWindowController>getController();
         listener.setUser(user);
         listener.setDatabaseController(databaseWindowController);
-        Thread listenerThread = new Thread(listener);
-        listenerThread.start();
         this.scene = new Scene(window);
+        showScene();
     }
 
     @FXML
     public void signUp(ActionEvent event) {
-        String login = loginField.getText();
-        String password = passwordField.getText();
-        if (login.trim().equals("") || password.trim().equals(""))
-            return;
-        User newUser = new User(login, password);
-        loginField.clear();
-        passwordField.clear();
-        ServerAnswer serverAnswer = null;
+        User newUser = processUser();
+        if (newUser == null) return;
+        this.user = newUser;
+
+        if (!listener.isConnected())
+            connectToServer();
         try {
-            listener.setConnection();
             Listener.sendRequest(new ClientRequest(RegisterCommand.getName(), newUser));
-            serverAnswer = Listener.readServerAnswer();
         } catch (IOException e) {
-            showErrorDialog("Could not connect to server", "Please check for firewall issues and check if the server is running.");
+            AlertCaller.showErrorDialog("Could not connect to server", "Please check for firewall issues and check if the server is running.");
             System.out.println("Could not connect to server");
+        }
+    }
+
+    public void registerEvent(ServerAnswer serverAnswer) {
+        if (!serverAnswer.commandExitStatus()) {
+            AlertCaller.showErrorDialog(serverAnswer.userErrors().get(0), "Please, check your login");
             return;
         }
-        if (!serverAnswer.commandExitStatus()) {
-            showErrorDialog(serverAnswer.userErrors().get(0), "Please, check your login");
-        }
+        AlertCaller.infoAlert(String.format("user '%s' successfully register!", serverAnswer.user().getLogin()));
     }
 
     public void showScene() {
@@ -144,16 +163,6 @@ public class LoginWindowController {
     public void closeSystem(){
         Platform.exit();
         System.exit(0);
-    }
-
-    public static void showErrorDialog(String message, String contentText) {
-        Platform.runLater(()-> {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Warning!");
-            alert.setHeaderText(message);
-            alert.setContentText(contentText);
-            alert.showAndWait();
-        });
     }
 
     public User getUser() {

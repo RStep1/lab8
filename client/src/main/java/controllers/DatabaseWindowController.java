@@ -16,6 +16,8 @@ import java.util.TreeSet;
 
 import javax.swing.text.html.parser.Element;
 
+import commands.HelpCommand;
+import commands.LoginCommand;
 import commands.QuitCommand;
 import commands.ShowCommand;
 import data.ClientRequest;
@@ -52,6 +54,7 @@ import mods.RemoveMode;
 import processing.TCPExchanger;
 import run.MainLauncher;
 import user.Listener;
+import utility.AlertCaller;
 
 public class DatabaseWindowController {
 
@@ -190,7 +193,13 @@ public class DatabaseWindowController {
 
     @FXML
     public void onInsertButtonClick(ActionEvent event) {
-        System.out.println("insert");
+        try {
+            Listener.sendRequest(new ClientRequest(HelpCommand.getName(), LoginWindowController.getInstance().getUser()));
+            System.out.println("insert button click");
+        } catch (IOException e) {
+            AlertCaller.showErrorDialog("Could not connect to server", "Please check for firewall issues and check if the server is running.");
+            System.out.println("Could not connect to server");
+        }
     }
 
     @FXML
@@ -225,7 +234,6 @@ public class DatabaseWindowController {
         try {
             Listener.sendRequest(new ClientRequest(QuitCommand.getName()));
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         logoutScene();
@@ -328,5 +336,10 @@ public class DatabaseWindowController {
             vehicleTypeChoice.getItems().add(vehicleType.toString());
         for (FuelType fuelType : FuelType.values())
             fuelTypeChoice.getItems().add(fuelType.toString());
+    }
+
+
+    public void func(String s) {
+        System.out.println(s);
     }
 }

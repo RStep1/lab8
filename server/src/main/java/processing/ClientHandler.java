@@ -34,6 +34,8 @@ public class ClientHandler implements Runnable {
                     throw new IOException();
                 serverAnswer = requestHandler.processRequest(clientRequest);
                 TCPExchanger.write(bufferedOutputStream, serverAnswer);
+                System.out.println("WRITE ANSWER: ");
+                System.out.println(serverAnswer.eventType() + "");
                 bufferedOutputStream.flush();
             }
         } catch (IOException e) {
