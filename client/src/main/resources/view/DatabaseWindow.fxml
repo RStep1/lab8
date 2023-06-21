@@ -76,8 +76,8 @@
             <TableColumn fx:id="distanceTravelledColumn" prefWidth="92.0" text="Distance Travelled" />
             <TableColumn fx:id="vehicleTypeColumn" prefWidth="94.39996337890625" text="Vehicle Type" />
             <TableColumn fx:id="fuelTypeColumn" prefWidth="108.79998779296875" text="Fuel Type" />
-            <TableColumn prefWidth="135.20001220703125" text="Owner" />
-            <TableColumn fx:id="ownerColumn1" prefWidth="142.39996337890625" text="Owner" />
+            <TableColumn fx:id="creationDateColumn" prefWidth="135.20001220703125" text="Creation Date" />
+            <TableColumn fx:id="ownerColumn" prefWidth="142.39996337890625" text="Owner" />
         </columns>
       </TableView>
       <HBox layoutX="50.0" layoutY="37.0" prefHeight="46.0" prefWidth="197.0" spacing="10.0">
@@ -132,6 +132,6 @@
             <Label fx:id="countLabel" prefHeight="30.0" prefWidth="100.0" style="-fx-background-color: #ffffff;" text="value" textAlignment="CENTER" />
          </children>
       </HBox>
-      <Button fx:id="onClearButtonClick" layoutX="938.0" layoutY="626.0" mnemonicParsing="false" onAction="#onClearButtonClick" prefHeight="30.0" prefWidth="117.0" text="Clear" />
+      <Button fx:id="clearButton" layoutX="938.0" layoutY="626.0" mnemonicParsing="false" onAction="#onClearButtonClick" prefHeight="30.0" prefWidth="117.0" text="Clear" />
    </children>
 </AnchorPane>

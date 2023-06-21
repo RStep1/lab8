@@ -7,21 +7,30 @@ import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.Arrays;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.swing.text.html.parser.Element;
 
 import commands.QuitCommand;
-import data.CommandArguments;
+import commands.ShowCommand;
+import data.ClientRequest;
+import data.Coordinates;
 import data.CountMode;
 import data.FilterMode;
 import data.FuelType;
 import data.TableRowVehicle;
+import data.User;
+import data.Vehicle;
 import data.VehicleType;
 import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -35,13 +44,22 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import mods.ExecuteMode;
 import mods.RemoveMode;
+import processing.TCPExchanger;
 import run.MainLauncher;
 import user.Listener;
 
 public class DatabaseWindowController {
+
+    private Hashtable<Long, Vehicle> vehicleHashtable;
+    private TreeSet<TableRowVehicle> vehicleTreeSet;
+
+    @FXML
+    private TableColumn<TableRowVehicle, String> creationDateColumn;
 
     @FXML
     private Label usernameLabel;
@@ -187,7 +205,8 @@ public class DatabaseWindowController {
 
     @FXML
     public void onCountButtonClick(ActionEvent event) {
-        System.out.println("count");
+        System.out.print("count");
+        System.out.println(countByChoiceBox.getValue());
     }
 
     @FXML
@@ -204,7 +223,7 @@ public class DatabaseWindowController {
     public void quit(ActionEvent event) {
         System.out.println("logout");
         try {
-            Listener.sendRequest(new CommandArguments(QuitCommand.getName(), null, null, null, null, null));
+            Listener.sendRequest(new ClientRequest(QuitCommand.getName()));
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -235,19 +254,70 @@ public class DatabaseWindowController {
 
     @FXML
     public void initialize() {
-        this.countLabel.setText("0");
-        this.lastModifiedTimeLabel.setText("no changes yet");
-        this.tableRecordsLabel.setText("0");
 
-
-        initChoiceBoxes();
-        // Arrays.asList(CountMods.values()).stream().forEach(x -> countByChoiceBox.getItems().add(x.getName()));
-        
-        // this.countLabel.setText(currentBundle.getString("984359"));
+        initializeLabels();
+        initializeChoiceBoxes();
+        initializeTable();
     }
 
 
-    private void initChoiceBoxes() {
+    private void initializeTable() {
+        vehicleHashtable = loadColletion();
+        try {
+            Listener.sendRequest(new ClientRequest(ShowCommand.getName(), LoginWindowController.getInstance().getUser()));
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        };
+        ObservableList<TableRowVehicle> vehicleObservableList = FXCollections.observableArrayList();
+        Set<Long> keySet = vehicleHashtable.keySet();
+        for (Long key : keySet) {
+            Vehicle vehicle = vehicleHashtable.get(key);
+            TableRowVehicle tableRowVehicle = 
+                new TableRowVehicle(vehicle.getId(),
+                                    key,
+                                    vehicle.getName(),
+                                    vehicle.getCoordinates().getX(),
+                                    vehicle.getCoordinates().getY(),
+                                    vehicle.getEnginePower(),
+                                    vehicle.getDistanceTravelled(),
+                                    vehicle.getType().toString(),
+                                    vehicle.getFuelType().toString(),
+                                    vehicle.getCreationDate(),
+                                    vehicle.getUsername()
+                );
+            vehicleObservableList.add(tableRowVehicle);
+        }
+        idColumn.setCellValueFactory(new PropertyValueFactory<TableRowVehicle, Long>("id"));
+        keyColumn.setCellValueFactory(new PropertyValueFactory<TableRowVehicle, Long>("key"));
+        nameColumn.setCellValueFactory(new PropertyValueFactory<TableRowVehicle, String>("name"));
+        xColumn.setCellValueFactory(new PropertyValueFactory<TableRowVehicle, Float>("xCoordinate"));
+        yColumn.setCellValueFactory(new PropertyValueFactory<TableRowVehicle, Double>("yCoordinate"));
+        enginePowerColumn.setCellValueFactory(new PropertyValueFactory<TableRowVehicle, Integer>("enginePower"));
+        distanceTravelledColumn.setCellValueFactory(new PropertyValueFactory<TableRowVehicle, Long>("distanceTravelled"));
+        vehicleTypeColumn.setCellValueFactory(new PropertyValueFactory<TableRowVehicle, String>("vehicleType"));
+        fuelTypeColumn.setCellValueFactory(new PropertyValueFactory<TableRowVehicle, String>("fuelType"));
+        creationDateColumn.setCellValueFactory(new PropertyValueFactory<TableRowVehicle, String>("creationDate"));
+        ownerColumn.setCellValueFactory(new PropertyValueFactory<TableRowVehicle, String>("owner"));
+
+        vehicleTable.setItems(vehicleObservableList);
+    }
+
+    private Hashtable<Long, Vehicle> loadColletion() {
+        Hashtable<Long, Vehicle> hashtable = new Hashtable<>();
+        Vehicle vehicle = new Vehicle(245, "aaf", new Coordinates(254, 5), "asdoifj", 4452, 2346, VehicleType.BOAT, FuelType.ALCOHOL);
+        vehicle.setUsername("username");
+        hashtable.put(1l, vehicle);
+        return hashtable;
+    }
+
+    private void initializeLabels() {
+        this.countLabel.setText("0");
+        this.lastModifiedTimeLabel.setText("no changes yet");
+        this.tableRecordsLabel.setText("0");
+    }
+    
+    private void initializeChoiceBoxes() {
         for (CountMode countMode : CountMode.values()) 
             countByChoiceBox.getItems().add(countMode.getName());
         for (FilterMode filterMode : FilterMode.values())

@@ -1,7 +1,7 @@
 package processing;
 
 import commands.*;
-import data.CommandArguments;
+import data.ClientRequest;
 import utility.FileHandler;
 
 import java.util.HashMap;
@@ -60,11 +60,11 @@ public class CommandInvoker {
 
     /**
     * Invokes a command from its wrapper class.
-    * @param commandArguments contains the name of the command, its arguments on a single line,
+    * @param clientRequest contains the name of the command, its arguments on a single line,
     *                        arguments that are characteristics of the collection class and execution mode.
     * @return Command exit status.
     */
-    public boolean execute(CommandArguments commandArguments) {
-        return commandMap.get(commandArguments.getCommandName()).execute(commandArguments);
+    public boolean execute(ClientRequest clientRequest) {
+        return commandMap.get(clientRequest.getCommandName()).execute(clientRequest);
     }
 }

@@ -1,9 +1,9 @@
 package processing;
 
 import commands.*;
-import data.CommandArguments;
+import data.ClientRequest;
 import exceptions.WrongAmountOfArgumentsException;
-import mods.AnswerType;
+import mods.EventType;
 import mods.ExecuteMode;
 import mods.MessageType;
 import utility.*;
@@ -14,14 +14,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.Set;
 
 public class CommandValidator {
-    private final AnswerType answerType;
     private static final Set<String> scriptCounter = new HashSet<>();
 
-    public CommandValidator(AnswerType answerType) {
-        this.answerType = answerType;
+    public CommandValidator() {
     }
 
-    private boolean checkNumberOfArguments(CommandArguments commandArguments, int expectedNumberOfArguments) {
+    private boolean checkNumberOfArguments(ClientRequest commandArguments, int expectedNumberOfArguments) {
         try {
             if (commandArguments.getArguments().length != expectedNumberOfArguments) {
                 MessageHolder.putCurrentCommand(commandArguments.getCommandName(), MessageType.USER_ERROR);
@@ -35,7 +33,7 @@ public class CommandValidator {
         return false;
     }
 
-    private boolean validateDistanceTravelled(CommandArguments commandArguments) {
+    private boolean validateDistanceTravelled(ClientRequest commandArguments) {
         String commandName = commandArguments.getCommandName();
         String[] arguments = commandArguments.getArguments();
         if (!checkNumberOfArguments(commandArguments, 1))
@@ -49,7 +47,7 @@ public class CommandValidator {
         return true;
     }
 
-    private boolean validateEnginePower(CommandArguments commandArguments) {
+    private boolean validateEnginePower(ClientRequest commandArguments) {
         String[] arguments = commandArguments.getArguments();
         if (!checkNumberOfArguments(commandArguments, 1))
             return false;
@@ -67,7 +65,7 @@ public class CommandValidator {
      * @param commandArguments
      * @return Check status.
      */
-    private boolean validateKey(CommandArguments commandArguments) {
+    private boolean validateKey(ClientRequest commandArguments) {
         String[] arguments = commandArguments.getArguments();
         String commandName = commandArguments.getCommandName();
         if (arguments.length == 0) {
@@ -83,7 +81,7 @@ public class CommandValidator {
         return true;
     }
 
-    private boolean validateFuelType(CommandArguments commandArguments) {
+    private boolean validateFuelType(ClientRequest commandArguments) {
         String[] arguments = commandArguments.getArguments();
         if (!checkNumberOfArguments(commandArguments, 1))
             return false;
@@ -97,7 +95,7 @@ public class CommandValidator {
         return true;
     }
 
-    private boolean validateId(CommandArguments commandArguments) {
+    private boolean validateId(ClientRequest commandArguments) {
         String[] arguments = commandArguments.getArguments();
         if (arguments.length == 0) {
             MessageHolder.putCurrentCommand(commandArguments.getCommandName(), MessageType.USER_ERROR);
@@ -112,7 +110,7 @@ public class CommandValidator {
         return true;
     }
 
-    private boolean validateExecuteScriptCommand(CommandArguments commandArguments) {
+    private boolean validateExecuteScriptCommand(ClientRequest commandArguments) {
         String[] arguments = commandArguments.getArguments();
         if (commandArguments.getExecuteMode() == ExecuteMode.COMMAND_MODE)
             scriptCounter.clear();
@@ -136,7 +134,7 @@ public class CommandValidator {
         return true;
     }
 
-    private boolean validateUser(CommandArguments commandArguments) {
+    private boolean validateUser(ClientRequest commandArguments) {
         String[] arguments = commandArguments.getArguments();
         if (!checkNumberOfArguments(commandArguments, 0)) {
             return false;
@@ -144,13 +142,13 @@ public class CommandValidator {
         return true;
     }
 
-    public boolean validate(CommandArguments commandArguments) {
+    public boolean validate(ClientRequest commandArguments) {
         if (commandArguments == null)
             return false;
         return validateArguments(commandArguments);
     }
 
-    private boolean validateArguments(CommandArguments commandArguments) {
+    private boolean validateArguments(ClientRequest commandArguments) {
         boolean isCorrect;
         switch (commandArguments.getCommandName()) {
             case "help", "info", "show", "clear", "exit" -> isCorrect = checkNumberOfArguments(commandArguments, 0);

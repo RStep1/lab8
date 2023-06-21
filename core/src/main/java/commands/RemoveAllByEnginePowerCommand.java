@@ -1,6 +1,6 @@
 package commands;
 
-import data.CommandArguments;
+import data.ClientRequest;
 import processing.BufferedDataBase;
 
 /**
@@ -20,7 +20,7 @@ public class RemoveAllByEnginePowerCommand implements Command {
     }
 
     @Override
-    public boolean execute(CommandArguments commandArguments) {
+    public boolean execute(ClientRequest commandArguments) {
         return bufferedDataBase.removeAllByEnginePower(commandArguments);
     }
 

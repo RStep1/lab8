@@ -10,7 +10,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
-import data.CommandArguments;
+import data.ClientRequest;
 
 public class Client {
     private static Socket clientSocket;
@@ -37,7 +37,7 @@ public class Client {
         return clientSocket;
     }
 
-    public ServerAnswer dataExchange(CommandArguments request) {
+    public ServerAnswer dataExchange(ClientRequest request) {
         ServerAnswer serverAnswer;
         try {
             TCPExchanger.write(bufferedOutputStream, request);

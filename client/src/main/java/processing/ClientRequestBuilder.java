@@ -6,11 +6,10 @@ import commands.InsertCommand;
 import commands.LoginCommand;
 import commands.RegisterCommand;
 import commands.UpdateCommand;
-import data.CommandArguments;
+import data.ClientRequest;
 import data.User;
 import data.Vehicle;
-import mods.AnswerType;
-import mods.ClientRequestType;
+import mods.EventType;
 import mods.ExecuteMode;
 import user.Client;
 import utility.FileHandler;
@@ -18,17 +17,15 @@ import utility.FileHandler;
 import java.io.File;
 import java.util.*;
 
-public class CommandArgumentsBuilder {
+public class ClientRequestBuilder {
     public final Scanner scanner;
-    private final AnswerType answerType;
     private User user;
 
-    public CommandArgumentsBuilder(Scanner scanner, AnswerType answerType) {
+    public ClientRequestBuilder(Scanner scanner) {
         this.scanner = scanner;
-        this.answerType = answerType;
     }
 
-    public ArrayList<CommandArguments> userEnter() {
+    public ArrayList<ClientRequest> userEnter() {
         Console.print("Type command and press Enter: ");
         String nextLine = "";
         try {
@@ -41,7 +38,7 @@ public class CommandArgumentsBuilder {
         return commandProcessing(nextLine, ExecuteMode.COMMAND_MODE, null);
     }
 
-    private ArrayList<CommandArguments> commandProcessing(String nextLine, ExecuteMode executeMode, File currentScriptFile) {
+    private ArrayList<ClientRequest> commandProcessing(String nextLine, ExecuteMode executeMode, File currentScriptFile) {
         if (nextLine.trim().equals(""))
             return new ArrayList<>();
         UserLineSeparator userLineSeparator = new UserLineSeparator(nextLine);
@@ -51,18 +48,18 @@ public class CommandArgumentsBuilder {
         if (nextCommand.equals(RegisterCommand.getName()) || nextCommand.equals(LoginCommand.getName())) {
             user = Console.enterUsernameAndPassword(scanner, nextLine);
         }
-        CommandArguments newCommandArguments = 
-                        new CommandArguments(nextCommand, arguments, extraArguments,
-                                            ClientRequestType.COMMAND_EXECUTION, executeMode, user);
-        newCommandArguments.setScriptFile(currentScriptFile);
+        ClientRequest newClientRequest = new ClientRequest(nextCommand, arguments, extraArguments, null, executeMode, user);
+                        // new ClientRequest(nextCommand, arguments, extraArguments, executeMode, user);
+
+        newClientRequest.setScriptFile(currentScriptFile);
         if (nextCommand.equals(ExecuteScriptCommand.getName())) // if it's execute_script command, start script processing
-            return scriptProcessing(newCommandArguments);
-        ArrayList<CommandArguments> commandArgumentsArrayList = new ArrayList<>();
-        CommandValidator commandValidator = new CommandValidator(answerType);
-        if (commandValidator.validate(newCommandArguments)) {// add command only if it's correct
-            commandArgumentsArrayList.add(newCommandArguments);
+            return scriptProcessing(newClientRequest);
+        ArrayList<ClientRequest> clientRequestArrayList = new ArrayList<>();
+        CommandValidator commandValidator = new CommandValidator();
+        if (commandValidator.validate(newClientRequest)) {// add command only if it's correct
+            clientRequestArrayList.add(newClientRequest);
         }
-        return commandArgumentsArrayList;
+        return clientRequestArrayList;
     }
 
     /**
@@ -87,13 +84,13 @@ public class CommandArgumentsBuilder {
         }
     }
 
-    private ArrayList<CommandArguments> scriptProcessing(CommandArguments commandArguments) {
-        CommandValidator commandValidator = new CommandValidator(answerType);
-        if (!commandValidator.validate(commandArguments))
+    private ArrayList<ClientRequest> scriptProcessing(ClientRequest clientRequest) {
+        CommandValidator commandValidator = new CommandValidator();
+        if (!commandValidator.validate(clientRequest))
             return new ArrayList<>();
-        File currentScriptFile = commandArguments.getScriptFile();
-        ArrayList<String> scriptLines = FileHandler.readScriptFile(commandArguments.getScriptFile());
-        ArrayList<CommandArguments> scriptCommands = new ArrayList<>();
+        File currentScriptFile = clientRequest.getScriptFile();
+        ArrayList<String> scriptLines = FileHandler.readScriptFile(clientRequest.getScriptFile());
+        ArrayList<ClientRequest> scriptCommands = new ArrayList<>();
         int countOfScriptLines = scriptLines.size();
         for (int line = 0; line < countOfScriptLines; line++) {
             String scriptLine = scriptLines.get(line);
@@ -101,18 +98,18 @@ public class CommandArgumentsBuilder {
                 continue;
             scriptCommands.addAll(commandProcessing(scriptLine, ExecuteMode.SCRIPT_MODE, currentScriptFile));
             if (!scriptCommands.isEmpty()) {
-                CommandArguments lastCommandArguments = scriptCommands.get(scriptCommands.size() - 1);
-                if (lastCommandArguments.getCommandName().equals(ExitCommand.getName()) &&
-                    lastCommandArguments.getScriptFile().getName().equals(currentScriptFile.getName())) { // exit from script, stop adding commands (only if the last command from current scrip file)
+                ClientRequest lastClientRequest = scriptCommands.get(scriptCommands.size() - 1);
+                if (lastClientRequest.getCommandName().equals(ExitCommand.getName()) &&
+                    lastClientRequest.getScriptFile().getName().equals(currentScriptFile.getName())) { // exit from script, stop adding commands (only if the last command from current scrip file)
                     break;
                 }
-                if ((lastCommandArguments.getCommandName().equals(InsertCommand.getName()) || 
-                    lastCommandArguments.getCommandName().equals(UpdateCommand.getName())) &&
-                    lastCommandArguments.getScriptFile().getName().equals(currentScriptFile.getName()) &&
-                    lastCommandArguments.getExtraArguments() == null) {
+                if ((lastClientRequest.getCommandName().equals(InsertCommand.getName()) || 
+                    lastClientRequest.getCommandName().equals(UpdateCommand.getName())) &&
+                    lastClientRequest.getScriptFile().getName().equals(currentScriptFile.getName()) &&
+                    lastClientRequest.getExtraArguments() == null) {
                     String[] extraArguments = readExtraArguments(Vehicle.getCountOfChangeableFields(),
                                                                      line, countOfScriptLines, scriptLines);
-                    lastCommandArguments.setExtraArguments(extraArguments);
+                    lastClientRequest.setExtraArguments(extraArguments);
                     line += Vehicle.getCountOfChangeableFields();
                 }
             }

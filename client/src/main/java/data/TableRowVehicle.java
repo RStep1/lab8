@@ -8,13 +8,13 @@ public class TableRowVehicle {
     private double yCoordinate;
     private int enginePower;
     private long distanceTravelled;
-    private VehicleType vehicleType;
-    private FuelType fuelType;
+    private String vehicleType;
+    private String fuelType;
     private String creationDate;
     private String owner;
 
-    public TableRowVehicle(long id, long key, String name, float xCoordinate, float yCoordinate, int enginePower,
-                            long distanceTravelled, VehicleType vehicleType, FuelType fuelType, String owner) {
+    public TableRowVehicle(long id, long key, String name, float xCoordinate, double yCoordinate, int enginePower,
+                            long distanceTravelled, String vehicleType, String fuelType, String creationDate, String owner) {
         this.id = id;
         this.key = key;
         this.name = name;
@@ -24,6 +24,7 @@ public class TableRowVehicle {
         this.distanceTravelled = distanceTravelled;
         this.vehicleType = vehicleType;
         this.fuelType = fuelType;
+        this.creationDate = creationDate;
         this.owner = owner;                             
     }
 
@@ -59,11 +60,11 @@ public class TableRowVehicle {
         return distanceTravelled;
     }
 
-    public VehicleType getType() {
+    public String getVehicleType() {
         return vehicleType;
     }
 
-    public FuelType getFuelType() {
+    public String getFuelType() {
         return fuelType;
     }
 

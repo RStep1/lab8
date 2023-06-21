@@ -1,6 +1,6 @@
 package commands;
 
-import data.CommandArguments;
+import data.ClientRequest;
 import data.Vehicle;
 import processing.BufferedDataBase;
 
@@ -20,7 +20,7 @@ public class RegisterCommand implements Command {
     }
 
     @Override
-    public boolean execute(CommandArguments commandArguments) {
+    public boolean execute(ClientRequest commandArguments) {
         return bufferedDataBase.register(commandArguments);
     }
 

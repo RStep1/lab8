@@ -1,6 +1,6 @@
 package processing;
 
-import data.CommandArguments;
+import data.ClientRequest;
 import data.FuelType;
 import data.User;
 import data.Vehicle;
@@ -52,11 +52,11 @@ public class BufferedDataBase {
 
     /**
      * Displays information about all commands.
-     * @param commandArguments contains the name of the command, its arguments on a single line,
+     * @param clientRequest contains the name of the command, its arguments on a single line,
      *                        arguments that are characteristics of the collection class and execution mode.
      * @return Command exit status.
      */
-    public boolean help(CommandArguments commandArguments) {
+    public boolean help(ClientRequest clientRequest) {
         MessageHolder.putCurrentCommand(HelpCommand.getName(), MessageType.OUTPUT_INFO);
         MessageHolder.putMessage(FileHandler.readFile(FileType.REFERENCE), MessageType.OUTPUT_INFO);
         return true;
@@ -64,11 +64,11 @@ public class BufferedDataBase {
 
     /**
      * Displays information about collection.
-     * @param commandArguments contains the name of the command, its arguments on a single line,
+     * @param clientRequest contains the name of the command, its arguments on a single line,
      *                        arguments that are characteristics of the collection class and execution mode.
      * @return Command exit status.
      */
-    public boolean info(CommandArguments commandArguments) {
+    public boolean info(ClientRequest clientRequest) {
         String stringLastInitTime = (lastInitTime == null ?
                 "there have been no initializations in this session yet" : lastInitTime.format(dateFormatter));
         String stringLastSaveTime = (lastSaveTime == null ?
@@ -86,11 +86,11 @@ public class BufferedDataBase {
 
     /**
      * Displays all elements of the collection.
-     * @param commandArguments contains the name of the command, its arguments on a single line,
+     * @param clientRequest contains the name of the command, its arguments on a single line,
      *                        arguments that are characteristics of the collection class and execution mode.
      * @return Command exit status.
      */
-    public boolean show(CommandArguments commandArguments) {
+    public boolean show(ClientRequest clientRequest) {
         MessageHolder.putCurrentCommand(ShowCommand.getName(), MessageType.OUTPUT_INFO);
         if (dataBase.isEmpty()) {
             MessageHolder.putMessage("Collection is empty", MessageType.OUTPUT_INFO);
@@ -105,28 +105,28 @@ public class BufferedDataBase {
 
     /**
      * Adds a new element to the collection by key.
-     * @param commandArguments contains the name of the command, its arguments on a single line,
+     * @param clientRequest contains the name of the command, its arguments on a single line,
      *                        arguments that are characteristics of the collection class and execution mode.
      * @return Command exit status.
      */
-    public boolean insert(CommandArguments commandArguments) {
-        if (identifierHandler.hasElementWithKey(commandArguments.getArguments()[0], true,
-                    InsertCommand.getName() + " " + commandArguments.getArguments()[0]))
+    public boolean insert(ClientRequest clientRequest) {
+        if (identifierHandler.hasElementWithKey(clientRequest.getArguments()[0], true,
+                    InsertCommand.getName() + " " + clientRequest.getArguments()[0]))
                 return false;
-        if (commandArguments.getExtraArguments() == null)
+        if (clientRequest.getExtraArguments() == null)
             return true;
-        return addElementBy(commandArguments, AddMode.INSERT_MODE);
+        return addElementBy(clientRequest, AddMode.INSERT_MODE);
     }
 
     /**
      * Updates the collection element by id.
-     * @param commandArguments contains the name of the command, its arguments on a single line,
+     * @param clientRequest contains the name of the command, its arguments on a single line,
      *                        arguments that are characteristics of the collection class and execution mode.
      * @return Command exit status.
      */
-    public boolean update(CommandArguments commandArguments) {
-        long id = Long.parseLong(commandArguments.getArguments()[0]);
-        User user = commandArguments.getUser();
+    public boolean update(ClientRequest clientRequest) {
+        long id = Long.parseLong(clientRequest.getArguments()[0]);
+        User user = clientRequest.getUser();
         if (!identifierHandler.hasElementWithId(id)) {
             MessageHolder.putMessage("No such element with this id", MessageType.USER_ERROR);
             return false;
@@ -135,22 +135,22 @@ public class BufferedDataBase {
             MessageHolder.putMessage("The element you want to update does not belong to you", MessageType.USER_ERROR);
             return false;
         }
-        if (commandArguments.getExtraArguments() == null)
+        if (clientRequest.getExtraArguments() == null)
             return true;
-        return addElementBy(commandArguments, AddMode.UPDATE_MODE);
+        return addElementBy(clientRequest, AddMode.UPDATE_MODE);
     }
 
     /**
      * Executes 'insert' or 'update' command.
-     * @param commandArguments
+     * @param clientRequest
      * @param addMode Defines command.
      * @return Command exit status.
      */
-    private boolean addElementBy(CommandArguments commandArguments, AddMode addMode) {
-        String[] arguments = commandArguments.getArguments();
-        String[] vehicleValues = commandArguments.getExtraArguments();
-        String commandName = commandArguments.getCommandName();
-        ExecuteMode executeMode = commandArguments.getExecuteMode();
+    private boolean addElementBy(ClientRequest clientRequest, AddMode addMode) {
+        String[] arguments = clientRequest.getArguments();
+        String[] vehicleValues = clientRequest.getExtraArguments();
+        String commandName = clientRequest.getCommandName();
+        ExecuteMode executeMode = clientRequest.getExecuteMode();
         java.time.ZonedDateTime creationDate = ZonedDateTime.now();
         long key = 0, id = -1;
         if (addMode == AddMode.INSERT_MODE) {
@@ -163,7 +163,7 @@ public class BufferedDataBase {
             MessageHolder.putCurrentCommand(commandName + " " + arguments[0], MessageType.USER_ERROR);
             MessageHolder.putMessage(String.format(
                     "There are not enough lines in script '%s' for the '%s %s' command",
-                    commandArguments.getScriptFile().getName(), commandName, arguments[0]), MessageType.USER_ERROR);
+                    clientRequest.getScriptFile().getName(), commandName, arguments[0]), MessageType.USER_ERROR);
             return false;
         }
         if (executeMode == ExecuteMode.SCRIPT_MODE && 
@@ -173,16 +173,16 @@ public class BufferedDataBase {
         Vehicle vehicle = ValueHandler.getVehicle(id, creationDate, vehicleValues);
         if (addMode == AddMode.INSERT_MODE) {
             try {
-                id = databaseCollectionManager.insertVehicle(key, vehicle, commandArguments.getUser());
+                id = databaseCollectionManager.insertVehicle(key, vehicle, clientRequest.getUser());
             } catch (SQLException e) {
                 MessageHolder.putMessage(e.getMessage(), MessageType.USER_ERROR);
                 return false;
             }
             vehicle.setId(id);
-            vehicle.setUsername(commandArguments.getUser().getLogin());
+            vehicle.setUsername(clientRequest.getUser().getLogin());
         } else {
             try {
-                databaseCollectionManager.updateVehicleByIdAndLogin(vehicle, commandArguments.getUser());
+                databaseCollectionManager.updateVehicleByIdAndLogin(vehicle, clientRequest.getUser());
             } catch (SQLException e) {
                 MessageHolder.putMessage(e.getMessage(), MessageType.USER_ERROR);
                 return false;
@@ -198,19 +198,19 @@ public class BufferedDataBase {
 
     /**
      * Removes element by key.
-     * @param commandArguments contains the name of the command, its arguments on a single line,
+     * @param clientRequest contains the name of the command, its arguments on a single line,
      *                        arguments that are characteristics of the collection class and execution mode.
      * @return Command exit status.
      */
-    public boolean removeKey(CommandArguments commandArguments) {
-        String[] arguments = commandArguments.getArguments();
+    public boolean removeKey(ClientRequest clientRequest) {
+        String[] arguments = clientRequest.getArguments();
         if (!identifierHandler.hasElementWithKey(arguments[0], false,
                 RemoveKeyCommand.getName() + " " + arguments[0]))
             return false;
         long key = Long.parseLong(arguments[0]);
         Vehicle vehicle = dataBase.get(key);
         long id = vehicle.getId();
-        if (!databaseCollectionManager.hasVehicleWithIdAndLogin(id, commandArguments.getUser().getLogin())) {
+        if (!databaseCollectionManager.hasVehicleWithIdAndLogin(id, clientRequest.getUser().getLogin())) {
             MessageHolder.putMessage("The element you want to remove does not belong to you", MessageType.USER_ERROR);
             return false;
         }
@@ -229,16 +229,16 @@ public class BufferedDataBase {
 
     /**
      * Clears the collection.
-     * @param commandArguments contains the name of the command, its arguments on a single line,
+     * @param clientRequest contains the name of the command, its arguments on a single line,
      *                        arguments that are characteristics of the collection class and execution mode.
      * @return Command exit status.
      */
-    public boolean clear(CommandArguments commandArguments) {
+    public boolean clear(ClientRequest clientRequest) {
         MessageHolder.putCurrentCommand(ClearCommand.getName(), MessageType.OUTPUT_INFO);
         if (dataBase.isEmpty()) {
             MessageHolder.putMessage("Collection is already empty", MessageType.OUTPUT_INFO);
         } else {
-            String currentLogin = commandArguments.getUser().getLogin();
+            String currentLogin = clientRequest.getUser().getLogin();
             try {
                 databaseCollectionManager.deleteByLogin(currentLogin);
             } catch (SQLException e) {
@@ -259,11 +259,11 @@ public class BufferedDataBase {
 
     /**
      * Saves the collection to a Json file.
-     * @param commandArguments contains the name of the command, its arguments on a single line,
+     * @param clientRequest contains the name of the command, its arguments on a single line,
      *                        arguments that are characteristics of the collection class and execution mode.
      * @return Command exit status.
      */
-    public boolean save(CommandArguments commandArguments) {
+    public boolean save(ClientRequest clientRequest) {
         FileHandler.saveDataBase(dataBase);
         // MessageHolder.putCurrentCommand(SaveCommand.getName(), MessageType.OUTPUT_INFO);
         // MessageHolder.putMessage("Collection successfully saved", MessageType.OUTPUT_INFO);
@@ -275,56 +275,56 @@ public class BufferedDataBase {
 
     /**
      * Terminates a program or exits an executing script.
-     * @param commandArguments contains the name of the command, its arguments on a single line,
+     * @param clientRequest contains the name of the command, its arguments on a single line,
      *                        arguments that are characteristics of the collection class and execution mode.
      * @return Command exit status.
      */
-    public boolean exit(CommandArguments commandArguments) {
+    public boolean exit(ClientRequest clientRequest) {
         MessageHolder.putCurrentCommand(ExitCommand.getName(), MessageType.OUTPUT_INFO);
-        if (commandArguments.getExecuteMode() == ExecuteMode.COMMAND_MODE)
+        if (clientRequest.getExecuteMode() == ExecuteMode.COMMAND_MODE)
             MessageHolder.putMessage("Program successfully completed", MessageType.OUTPUT_INFO);
         return true;
     }
 
     /**
      * Removes all elements of the collection whose distance travelled value exceeds the given value.
-     * @param commandArguments contains the name of the command, its arguments on a single line,
+     * @param clientRequest contains the name of the command, its arguments on a single line,
      *                        arguments that are characteristics of the collection class and execution mode.
      * @return Command exit status.
      */
-    public boolean removeGreater(CommandArguments commandArguments) {
-        return removeAllByDistanceTravelled(commandArguments, RemoveGreaterCommand.getName(), RemoveMode.GREATER_THEN_DISTANCE_TRAVELLED);
+    public boolean removeGreater(ClientRequest clientRequest) {
+        return removeAllByDistanceTravelled(clientRequest, RemoveGreaterCommand.getName(), RemoveMode.GREATER_THEN_DISTANCE_TRAVELLED);
     }
 
     /**
      * Removes all elements of the collection whose distance travelled value is less than the given value.
-     * @param commandArguments contains the name of the command, its arguments on a single line,
+     * @param clientRequest contains the name of the command, its arguments on a single line,
      *                        arguments that are characteristics of the collection class and execution mode.
      * @return Command exit status.
      */
-    public boolean removeLower(CommandArguments commandArguments) {
-        return removeAllByDistanceTravelled(commandArguments, RemoveLowerCommand.getName(), RemoveMode.LOWER_THEN_DISTANCE_TRAVELLED);
+    public boolean removeLower(ClientRequest clientRequest) {
+        return removeAllByDistanceTravelled(clientRequest, RemoveLowerCommand.getName(), RemoveMode.LOWER_THEN_DISTANCE_TRAVELLED);
     }
 
     /**
      * Executes 'remove greater' or 'remove_lower' command.
-     * @param commandArguments contains the name of the command, its arguments on a single line,
+     * @param clientRequest contains the name of the command, its arguments on a single line,
      *                        arguments that are characteristics of the collection class and execution mode.
      * @param removeMode Defines command.
      * @return Command exit status.
      */
-    private boolean removeAllByDistanceTravelled(CommandArguments commandArguments,
+    private boolean removeAllByDistanceTravelled(ClientRequest clientRequest,
                                                  String commandName, RemoveMode removeMode) {
-        String[] arguments = commandArguments.getArguments();
+        String[] arguments = clientRequest.getArguments();
         long userDistanceTravelled = Long.parseLong(arguments[0]);
         try {
-            databaseCollectionManager.deleteByDistanceTravelled(userDistanceTravelled, commandArguments.getUser().getLogin(), removeMode);
+            databaseCollectionManager.deleteByDistanceTravelled(userDistanceTravelled, clientRequest.getUser().getLogin(), removeMode);
         } catch (SQLException e) {
             MessageHolder.putMessage(e.getMessage(), MessageType.USER_ERROR);
             return false;
         }
         Set<Long> filteredKeys = dataBase.keySet().stream()
-                .filter(key -> dataBase.get(key).getUsername().equals(commandArguments.getUser().getLogin()))
+                .filter(key -> dataBase.get(key).getUsername().equals(clientRequest.getUser().getLogin()))
                 .filter(key -> (removeMode == RemoveMode.GREATER_THEN_DISTANCE_TRAVELLED ?
                         dataBase.get(key).getDistanceTravelled() > userDistanceTravelled :
                         dataBase.get(key).getDistanceTravelled() < userDistanceTravelled))
@@ -349,22 +349,22 @@ public class BufferedDataBase {
 
     /**
      * Removes all elements of the collection whose key is greater than the given value.
-     * @param commandArguments contains the name of the command, its arguments on a single line,
+     * @param clientRequest contains the name of the command, its arguments on a single line,
      *                        arguments that are characteristics of the collection class and execution mode.
      * @return Command exit status.
      */
-    public boolean removeGreaterKey(CommandArguments commandArguments) {
-        String[] arguments = commandArguments.getArguments();
+    public boolean removeGreaterKey(ClientRequest clientRequest) {
+        String[] arguments = clientRequest.getArguments();
         long userKey = Long.parseLong(arguments[0]);
         try {
-            databaseCollectionManager.deleteByGreaterKey(userKey, commandArguments.getUser().getLogin());
+            databaseCollectionManager.deleteByGreaterKey(userKey, clientRequest.getUser().getLogin());
         } catch (SQLException e) {
             MessageHolder.putMessage(e.getMessage(), MessageType.USER_ERROR);
             return false;
         }
         int countOfRemovedKeys = 0;
         Set<Long> filteredKeys = dataBase.keySet().stream()
-                                .filter(key -> dataBase.get(key).getUsername().equals(commandArguments.getUser().getLogin()))
+                                .filter(key -> dataBase.get(key).getUsername().equals(clientRequest.getUser().getLogin()))
                                 .filter(key -> key > userKey).collect(Collectors.toSet());
         for (Long key : filteredKeys) {
             dataBase.remove(key);
@@ -381,22 +381,22 @@ public class BufferedDataBase {
 
     /**
      * Removes all elements in the collection whose engine power is equal to the given value.
-     * @param commandArguments contains the name of the command, its arguments on a single line,
+     * @param clientRequest contains the name of the command, its arguments on a single line,
      *                        arguments that are characteristics of the collection class and execution mode.
      * @return Command exit status.
      */
-    public boolean removeAllByEnginePower(CommandArguments commandArguments) {
-        String[] arguments = commandArguments.getArguments();
+    public boolean removeAllByEnginePower(ClientRequest clientRequest) {
+        String[] arguments = clientRequest.getArguments();
         int userEnginePower = Integer.parseInt(arguments[0]);
         try {
-            databaseCollectionManager.deleteByEnginePower(userEnginePower, commandArguments.getUser().getLogin());
+            databaseCollectionManager.deleteByEnginePower(userEnginePower, clientRequest.getUser().getLogin());
         } catch (SQLException e) {
             MessageHolder.putMessage(e.getMessage(), MessageType.USER_ERROR);
             return false;
         }
         int countOfRemoved = 0;
         Set<Long> filteredKeys = dataBase.keySet().stream()
-                .filter(key -> dataBase.get(key).getUsername().equals(commandArguments.getUser().getLogin()))
+                .filter(key -> dataBase.get(key).getUsername().equals(clientRequest.getUser().getLogin()))
                 .filter(key -> dataBase.get(key).getEnginePower() == userEnginePower)
                 .collect(Collectors.toSet());
         for (Long key : filteredKeys) {
@@ -416,12 +416,12 @@ public class BufferedDataBase {
 
     /**
      * Prints the number of elements in the collection whose fuel type is equal to the given value.
-     * @param commandArguments contains the name of the command, its arguments on a single line,
+     * @param clientRequest contains the name of the command, its arguments on a single line,
      *                        arguments that are characteristics of the collection class and execution mode.
      * @return Command exit status.
      */
-    public boolean countByFuelType(CommandArguments commandArguments) {
-        String[] arguments = commandArguments.getArguments();
+    public boolean countByFuelType(ClientRequest clientRequest) {
+        String[] arguments = clientRequest.getArguments();
         FuelType fuelType = ValueTransformer.SET_FUEL_TYPE.apply(
                 ValueHandler.TYPE_CORRECTION.correct(arguments[0]));
         long count = dataBase.keySet().stream()
@@ -435,12 +435,12 @@ public class BufferedDataBase {
 
     /**
      * Prints all elements of the collection whose fuel type is less than or equal to the given value.
-     * @param commandArguments contains the name of the command, its arguments on a single line,
+     * @param clientRequest contains the name of the command, its arguments on a single line,
      *                        arguments that are characteristics of the collection class and execution mode.
      * @return Command exit status.
      */
-    public boolean filterLessThanFuelType(CommandArguments commandArguments) {
-        String[] arguments = commandArguments.getArguments();
+    public boolean filterLessThanFuelType(ClientRequest clientRequest) {
+        String[] arguments = clientRequest.getArguments();
         FuelType fuelType = ValueTransformer.SET_FUEL_TYPE.apply(
                 ValueHandler.TYPE_CORRECTION.correct(arguments[0]));
         AtomicBoolean hasSuchElements = new AtomicBoolean(false);
@@ -461,8 +461,8 @@ public class BufferedDataBase {
         return true;
     }
 
-    public boolean register(CommandArguments commandArguments) {
-        User user = commandArguments.getUser();
+    public boolean register(ClientRequest clientRequest) {
+        User user = clientRequest.getUser();
         if (databaseUserManager.getUserByLogin(user.getLogin()) != null) {
             MessageHolder.putMessage("User with such login already exists", MessageType.USER_ERROR);
             return false;
@@ -476,15 +476,15 @@ public class BufferedDataBase {
         return true;
     }
 
-    public boolean login(CommandArguments commandArguments) {
-        String login = commandArguments.getUser().getLogin();
+    public boolean login(ClientRequest clientRequest) {
+        String login = clientRequest.getUser().getLogin();
         User selectedUser = databaseUserManager.getUserByLogin(login);
         if (selectedUser == null) {
             MessageHolder.putMessage(String.format("User with login '%s' was not found", login), MessageType.USER_ERROR);
             return false;
         }
         String selectedPassword = selectedUser.getPasword();
-        String password = commandArguments.getUser().getPasword();
+        String password = clientRequest.getUser().getPasword();
         if (!SHA256Hashing.hash(password).equals(selectedPassword)) {
             MessageHolder.putMessage("Incorrect password", MessageType.USER_ERROR);
             return false;
@@ -493,7 +493,7 @@ public class BufferedDataBase {
         return true;
     }
 
-    public boolean quit(CommandArguments commandArguments) {
+    public boolean quit(ClientRequest clientRequest) {
         MessageHolder.putMessage("You are logout", MessageType.OUTPUT_INFO);
         return true;
     }

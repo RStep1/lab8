@@ -1,6 +1,6 @@
 package commands;
 
-import data.CommandArguments;
+import data.ClientRequest;
 import data.Vehicle;
 import processing.BufferedDataBase;
 
@@ -22,7 +22,7 @@ public class UpdateCommand implements Command {
     }
 
     @Override
-    public boolean execute(CommandArguments commandArguments) {
+    public boolean execute(ClientRequest commandArguments) {
         return bufferedDataBase.update(commandArguments);
     }
 

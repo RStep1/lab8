@@ -7,7 +7,7 @@ import java.util.ResourceBundle;
 
 import commands.LoginCommand;
 import commands.RegisterCommand;
-import data.CommandArguments;
+import data.ClientRequest;
 import data.User;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -29,7 +29,7 @@ import utility.ServerAnswer;
 public class LoginWindowController {
 
     // private static final String DATABASE_WINDOW = "../view/DatabaseWindow.fxml";
-
+    private User user;
     private static DatabaseWindowController databaseWindowController;
     private static final String HOST = "localhost";
     private static final int PORT = 18022;
@@ -69,13 +69,13 @@ public class LoginWindowController {
         String password = passwordField.getText();
         if (login.trim().equals("") || password.trim().equals(""))
             return;
-        User user = new User(login, password);
+        this.user = new User(login, password);
         loginField.clear();
         passwordField.clear();
         ServerAnswer serverAnswer;
         try {
             listener.setConnection();
-            Listener.sendRequest(new CommandArguments(LoginCommand.getName(), null, null, null, null, user));
+            Listener.sendRequest(new ClientRequest(LoginCommand.getName(), user));
             serverAnswer = Listener.readServerAnswer();
         } catch (IOException e) {
             showErrorDialog("Could not connect to server", "Please check for firewall issues and check if the server is running.");
@@ -94,7 +94,6 @@ public class LoginWindowController {
             e.printStackTrace();
         }
         databaseWindowController = fxmlLoader.<DatabaseWindowController>getController();
-        // databaseWindowController.setUsernameLabel(user.getLogin());
         listener.setUser(user);
         listener.setDatabaseController(databaseWindowController);
         Thread listenerThread = new Thread(listener);
@@ -108,13 +107,13 @@ public class LoginWindowController {
         String password = passwordField.getText();
         if (login.trim().equals("") || password.trim().equals(""))
             return;
-        User user = new User(login, password);
+        User newUser = new User(login, password);
         loginField.clear();
         passwordField.clear();
         ServerAnswer serverAnswer = null;
         try {
             listener.setConnection();
-            Listener.sendRequest(new CommandArguments(RegisterCommand.getName(), null, null, null, null, user));
+            Listener.sendRequest(new ClientRequest(RegisterCommand.getName(), newUser));
             serverAnswer = Listener.readServerAnswer();
         } catch (IOException e) {
             showErrorDialog("Could not connect to server", "Please check for firewall issues and check if the server is running.");
@@ -155,6 +154,10 @@ public class LoginWindowController {
             alert.setContentText(contentText);
             alert.showAndWait();
         });
+    }
+
+    public User getUser() {
+        return user;
     }
     
     @FXML

@@ -1,7 +1,7 @@
 package host;
 
 import commands.SaveCommand;
-import data.CommandArguments;
+import data.ClientRequest;
 import processing.ClientHandler;
 import processing.CommandInvoker;
 
@@ -13,9 +13,8 @@ public class Server {
     private final int port;
     private ServerSocket serverSocket;
     private final CommandInvoker invoker;
-    private static final CommandArguments SAVE_COMMAND = 
-                new CommandArguments(SaveCommand.getName(), null, null,
-                        null, null, null);
+    private static final ClientRequest SAVE_COMMAND = 
+                new ClientRequest(SaveCommand.getName());
 
     public Server(CommandInvoker invoker, int port) {
         this.invoker = invoker;
@@ -57,7 +56,7 @@ public class Server {
         }
     }
 
-    public static CommandArguments getSaveCommand() {
+    public static ClientRequest getSaveCommand() {
         return SAVE_COMMAND;
     }
 }
