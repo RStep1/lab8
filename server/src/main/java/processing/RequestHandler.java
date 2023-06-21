@@ -23,51 +23,23 @@ public class RequestHandler {
 
     public RequestHandler(CommandInvoker invoker) {
         this.invoker = invoker;
-        
     }
 
     public ServerAnswer processRequest(ClientRequest clientRequest) {
         MessageHolder.clearMessages(MessageType.OUTPUT_INFO);
         MessageHolder.clearMessages(MessageType.USER_ERROR);
         System.out.println(this.user);
-        
-        
-
-        if (this.user == null && 
-            !(clientRequest.getCommandName().equals(LoginCommand.getName()) || 
-            clientRequest.getCommandName().equals(RegisterCommand.getName()) || 
-            clientRequest.getCommandName().equals(HelpCommand.getName()) ||
-            clientRequest.getCommandName().equals(SaveCommand.getName()))) {
-                MessageHolder.putMessage("You need to be logged in to run commands", MessageType.USER_ERROR);
-            return new ServerAnswer(MessageHolder.getOutputInfo(), MessageHolder.getUserErrors(),
-                         false, null);
-        }
-
-        boolean exitStatus = invoker.execute(clientRequest);
+    
+        ServerAnswer serverAnswer = invoker.execute(clientRequest);
 
         if (this.user != null && clientRequest.getCommandName().equals(QuitCommand.getName())) {
             this.user = null;
         }
-        if (clientRequest.getCommandName().equals(LoginCommand.getName()) && exitStatus) {
+        if (clientRequest.getCommandName().equals(LoginCommand.getName()) && serverAnswer.commandExitStatus()) {
             this.user = clientRequest.getUser();
         }
-
-        ArrayList<String> outputInfo = MessageHolder.getOutputInfo();
-        ArrayList<String> userErrors = MessageHolder.getUserErrors();
-
-        return new ServerAnswer(outputInfo, userErrors, exitStatus); 
-    }
-
-    public static boolean isChangingCommand(ClientRequest clientRequest) {
-        return clientRequest.getCommandName().equals(UpdateCommand.getName()) ||
-        clientRequest.getCommandName().equals(InsertCommand.getName());
-    }
-
-    private boolean isCommandMode(ClientRequest clientRequest) {
-        return clientRequest.getExecuteMode() == ExecuteMode.COMMAND_MODE;
-    }
-
-    private boolean isExtraArgsNull(ClientRequest clientRequest) {
-        return clientRequest.getExtraArguments() == null;
+        serverAnswer.setMessages(MessageHolder.getOutputInfo(), MessageHolder.getUserErrors());
+        serverAnswer.setUser(clientRequest.getUser());
+        return serverAnswer;
     }
 }
