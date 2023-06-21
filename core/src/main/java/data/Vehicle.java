@@ -1,9 +1,11 @@
 package data;
 
+import java.io.Serializable;
+
 /**
  * Used as a separate element in the database.
  */
-public class Vehicle {
+public class Vehicle implements Serializable {
     private long id;
     private String name;
     private Coordinates coordinates;
