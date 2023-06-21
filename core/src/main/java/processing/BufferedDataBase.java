@@ -4,6 +4,9 @@ import data.ClientRequest;
 import data.FuelType;
 import data.User;
 import data.Vehicle;
+import database.DatabaseCollectionManager;
+import database.DatabaseHandler;
+import database.DatabaseUserManager;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -194,6 +197,7 @@ public class BufferedDataBase {
         dataBase.put(key, vehicle);
         MessageHolder.putCurrentCommand(commandName + " " + arguments[0], MessageType.OUTPUT_INFO);
         MessageHolder.putMessage("Element was successfully " + addMode.getResultMessage(), MessageType.OUTPUT_INFO);
+        DatabaseVersionHandler.updateVersion();
         return true;
     }
 
@@ -225,6 +229,7 @@ public class BufferedDataBase {
         MessageHolder.putCurrentCommand(RemoveKeyCommand.getName() + " " + arguments[0], MessageType.OUTPUT_INFO);
         MessageHolder.putMessage(String.format(
                 "Element with key = %s was successfully removed", key), MessageType.OUTPUT_INFO);
+        DatabaseVersionHandler.updateVersion();
         return true;
     }
 
@@ -255,6 +260,7 @@ public class BufferedDataBase {
             }
             MessageHolder.putMessage("Collection successfully cleared", MessageType.OUTPUT_INFO);
         }
+        DatabaseVersionHandler.updateVersion();
         return true;
     }
 
@@ -345,6 +351,7 @@ public class BufferedDataBase {
                     "%s elements were successfully removed with distance travelled %s %s",
                     countOfRemoved, removeMode.getSymbol(), userDistanceTravelled), MessageType.OUTPUT_INFO);
         }
+        DatabaseVersionHandler.updateVersion();
         return true;
     }
 
@@ -377,6 +384,7 @@ public class BufferedDataBase {
         else
             MessageHolder.putMessage(
                     String.format("%s elements was successfully removed", countOfRemovedKeys), MessageType.OUTPUT_INFO);
+        DatabaseVersionHandler.updateVersion();
         return true;
     }
 
@@ -412,6 +420,7 @@ public class BufferedDataBase {
             MessageHolder.putMessage(String.format(
                     "%s elements were successfully removed with engine power = %s",
                     countOfRemoved, userEnginePower), MessageType.OUTPUT_INFO);
+        DatabaseVersionHandler.updateVersion();
         return true;
     }
 
