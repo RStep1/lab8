@@ -5,6 +5,7 @@ import java.lang.reflect.Array;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.Arrays;
 import java.util.Hashtable;
@@ -16,10 +17,7 @@ import java.util.TreeSet;
 
 import javax.swing.text.html.parser.Element;
 
-import commands.HelpCommand;
-import commands.LoginCommand;
-import commands.QuitCommand;
-import commands.ShowCommand;
+import commands.*;
 import data.ClientRequest;
 import data.Coordinates;
 import data.CountMode;
@@ -44,23 +42,30 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import mods.ExecuteMode;
+import mods.MessageType;
 import mods.RemoveMode;
+import processing.CommandValidator;
 import processing.TCPExchanger;
 import run.MainLauncher;
 import user.Listener;
 import utility.AlertCaller;
+import utility.MessageHolder;
 import utility.ServerAnswer;
+import utility.ValueHandler;
 
 public class DatabaseWindowController {
 
-    private Hashtable<Long, Vehicle> vehicleHashtable;
-    private TreeSet<TableRowVehicle> vehicleTreeSet;
+    // private Hashtable<Long, Vehicle> vehicleHashtable;
+    private ObservableList<TableRowVehicle> vehicleObservableList;
+    private static final String datePattern = "dd/MM/yyy - HH:mm:ss";
+    private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(datePattern);
 
     @FXML
     private TableColumn<TableRowVehicle, String> creationDateColumn;
@@ -194,13 +199,61 @@ public class DatabaseWindowController {
 
     @FXML
     public void onInsertButtonClick(ActionEvent event) {
-        try {
-            Listener.sendRequest(new ClientRequest(HelpCommand.getName(), LoginWindowController.getInstance().getUser()));
-            System.out.println("insert button click");
-        } catch (IOException e) {
-            AlertCaller.showErrorDialog("Could not connect to server", "Please check for firewall issues and check if the server is running.");
-            System.out.println("Could not connect to server");
+        String[] arguments = new String[1];
+        String[] extraArguments = new String[7];
+        arguments[0] = keyField.getText();
+        extraArguments[0] = nameField.getText();
+        extraArguments[1] = xField.getText();
+        extraArguments[2] = yField.getText();
+        extraArguments[3] = enginePowerField.getText();
+        extraArguments[4] = distanceTravelledField.getText();
+        extraArguments[5] = vehicleTypeChoice.getSelectionModel().getSelectedItem();
+        extraArguments[6] = fuelTypeChoice.getSelectionModel().getSelectedItem();
+        ClientRequest clientRequest = new ClientRequest(InsertCommand.getName(), arguments, extraArguments,
+                                                        LoginWindowController.getInstance().getUser());
+        for (int i = 0; i < Vehicle.getCountOfChangeableFields(); i++) {
+            if (extraArguments[i] == null || extraArguments[i].trim().equals("")) {
+                AlertCaller.errorAlert("All fields must be filled to insert a new element");
+                return;
+            }
         }
+        CommandValidator commandValidator = new CommandValidator();
+        if (!commandValidator.validate(clientRequest) || !ValueHandler.checkValues(extraArguments, InsertCommand.getName())) {
+            AlertCaller.errorAlert(MessageHolder.getMessages(MessageType.USER_ERROR));
+            MessageHolder.clearMessages(MessageType.USER_ERROR);
+            return;
+        }
+        try {
+            Listener.sendRequest(clientRequest);
+        } catch (IOException e) {
+            AlertCaller.showErrorDialog("Connection lost", "Please check for firewall issues and check if the server is running.");
+            System.out.println("Connection lost");
+        }
+    }
+
+    public void insertEvnet(ServerAnswer serverAnswer) {
+        if (!serverAnswer.commandExitStatus()) {
+            AlertCaller.errorAlert(MessageHolder.getMessages(MessageType.USER_ERROR));
+            MessageHolder.clearMessages(MessageType.USER_ERROR);
+            return;
+        }
+        Platform.runLater(() -> {
+            keyField.clear();
+            clearFields();
+        });
+        TableRowVehicle tableRowVehicle = serverAnswer.tableRowVehicle();
+        vehicleObservableList.add(tableRowVehicle);
+        vehicleTable.refresh();
+    }
+
+    private void clearFields() {
+        nameField.clear();
+        xField.clear();
+        yField.clear();
+        enginePowerField.clear();
+        distanceTravelledField.clear();
+        vehicleTypeChoice.setValue(null);
+        fuelTypeChoice.setValue(null);
     }
 
     @FXML
@@ -258,7 +311,6 @@ public class DatabaseWindowController {
 
     public void setUsernameLabel(String username) {
         this.usernameLabel.setText(username);
-        System.out.println(usernameLabel.getText());
     }
 
     @FXML
@@ -272,14 +324,13 @@ public class DatabaseWindowController {
         };
         initializeLabels();
         initializeChoiceBoxes();
-        
     }
 
 
     public void initializeTableEvent(ServerAnswer serverAnswer) {
-        vehicleHashtable = serverAnswer.database();
+        Hashtable<Long, Vehicle> vehicleHashtable = serverAnswer.database();
         System.out.println("database size = " + vehicleHashtable.size());
-        ObservableList<TableRowVehicle> vehicleObservableList = FXCollections.observableArrayList();
+        vehicleObservableList = FXCollections.observableArrayList();
         Set<Long> keySet = vehicleHashtable.keySet();
         for (Long key : keySet) {
             Vehicle vehicle = vehicleHashtable.get(key);
@@ -311,6 +362,9 @@ public class DatabaseWindowController {
         ownerColumn.setCellValueFactory(new PropertyValueFactory<TableRowVehicle, String>("owner"));
 
         vehicleTable.setItems(vehicleObservableList);
+        vehicleTable.refresh();
+        this.tableRecordsLabel.setText(Integer.toString(vehicleHashtable.size()));
+        this.initializationTimeLabel.setText(ZonedDateTime.now().format(dateFormatter));
     }
 
     private void initializeLabels() {

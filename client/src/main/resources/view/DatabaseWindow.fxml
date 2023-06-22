@@ -76,8 +76,8 @@
             <TableColumn fx:id="distanceTravelledColumn" prefWidth="92.0" text="Distance Travelled" />
             <TableColumn fx:id="vehicleTypeColumn" prefWidth="94.39996337890625" text="Vehicle Type" />
             <TableColumn fx:id="fuelTypeColumn" prefWidth="108.79998779296875" text="Fuel Type" />
-            <TableColumn fx:id="creationDateColumn" prefWidth="135.20001220703125" text="Creation Date" />
-            <TableColumn fx:id="ownerColumn" prefWidth="142.39996337890625" text="Owner" />
+            <TableColumn fx:id="creationDateColumn" prefWidth="172.0" text="Creation Date" />
+            <TableColumn fx:id="ownerColumn" prefWidth="106.39996337890625" text="Owner" />
         </columns>
       </TableView>
       <HBox layoutX="50.0" layoutY="37.0" prefHeight="46.0" prefWidth="197.0" spacing="10.0">
@@ -99,16 +99,16 @@
          </children>
       </HBox>
       <ButtonBar prefHeight="40.0" prefWidth="200.0" />
-      <HBox layoutX="218.0" layoutY="618.0" prefHeight="46.0" prefWidth="220.0">
+      <HBox layoutX="241.0" layoutY="618.0" prefHeight="46.0" prefWidth="262.0">
          <children>
             <Label prefHeight="46.0" prefWidth="106.0" text="Last modified time:" textAlignment="CENTER" />
-            <Label fx:id="lastModifiedTimeLabel" prefHeight="46.0" prefWidth="116.0" text="no changes yet" textAlignment="CENTER" />
+            <Label fx:id="lastModifiedTimeLabel" prefHeight="46.0" prefWidth="163.0" text="no changes yet" textAlignment="CENTER" />
          </children>
       </HBox>
-      <HBox layoutX="516.0" layoutY="618.0" prefHeight="46.0" prefWidth="220.0">
+      <HBox layoutX="552.0" layoutY="618.0" prefHeight="46.0" prefWidth="263.0">
          <children>
             <Label prefHeight="46.0" prefWidth="106.0" text="Initialization time:" textAlignment="CENTER" />
-            <Label fx:id="initializationTimeLabel" prefHeight="46.0" prefWidth="116.0" textAlignment="CENTER" />
+            <Label fx:id="initializationTimeLabel" prefHeight="46.0" prefWidth="166.0" textAlignment="CENTER" />
          </children>
       </HBox>
       <HBox layoutX="743.0" layoutY="121.0" prefHeight="30.0" prefWidth="309.0" spacing="5.0">

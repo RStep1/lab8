@@ -9,13 +9,14 @@ import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
 
+import data.TableRowVehicle;
 import data.User;
 import data.Vehicle;
 
 public class ServerAnswer implements Serializable {
     private EventType eventType;
     private String[] arguments;
-    private String[] extraArguments;
+    private TableRowVehicle tableRowVehicle;
     private RemoveMode removeMode;
     private ArrayList<String> outputInfo;
     private ArrayList<String> userErrors;
@@ -24,12 +25,12 @@ public class ServerAnswer implements Serializable {
     private Hashtable<Long, Vehicle> database;
     private long databaseVersion;
 
-    public ServerAnswer(EventType eventType, String[] arguments, String[] extraArguments, RemoveMode removeMode,
+    public ServerAnswer(EventType eventType, String[] arguments, TableRowVehicle tableRowVehicle, RemoveMode removeMode,
                         ArrayList<String> outputInfo, ArrayList<String> userErrors, boolean commandExitStatus, User user,
                         Hashtable<Long, Vehicle> database) {
         this.eventType = eventType;
         this.arguments = arguments;
-        this.extraArguments = extraArguments;
+        this.tableRowVehicle = tableRowVehicle;
         this.outputInfo = outputInfo;
         this.userErrors = userErrors;
         this.removeMode = removeMode;
@@ -38,6 +39,10 @@ public class ServerAnswer implements Serializable {
         this.database = database;
     }
 
+    public ServerAnswer(EventType eventType, String[] arguments, boolean commandExitStatus) {
+        this(eventType, commandExitStatus);
+        this.arguments = arguments;
+    }
 
     public ServerAnswer(EventType eventType, boolean commandExitStatus) {
         this.eventType = eventType;
@@ -49,10 +54,10 @@ public class ServerAnswer implements Serializable {
         this.database = database;
     }
 
-    public ServerAnswer(EventType eventType, String[] arguments, String[] extraArguments, boolean commandExitStatus) {
+    public ServerAnswer(EventType eventType, String[] arguments, TableRowVehicle tableRowVehicle, boolean commandExitStatus) {
         this(eventType, commandExitStatus);
         this.arguments = arguments;
-        this.extraArguments = extraArguments;
+        this.tableRowVehicle = tableRowVehicle;
     }
 
     public ServerAnswer(EventType eventType, String[] arguments, RemoveMode removeMode, boolean commandExitStatus) {
@@ -69,8 +74,8 @@ public class ServerAnswer implements Serializable {
         return arguments;
     }
 
-    public String[] extraArguments() {
-        return extraArguments;
+    public TableRowVehicle tableRowVehicle() {
+        return tableRowVehicle;
     }
 
     public RemoveMode removeMode() {
@@ -93,6 +98,10 @@ public class ServerAnswer implements Serializable {
         return user;
     }
 
+    public long databaseVersion() {
+        return databaseVersion;
+    }
+
     public Hashtable<Long, Vehicle> database() {
         return database;
     }
@@ -104,6 +113,10 @@ public class ServerAnswer implements Serializable {
     public void setMessages(ArrayList<String> outputInfo, ArrayList<String> userErrors) {
         this.outputInfo = outputInfo;
         this.userErrors = userErrors;
+    }
+
+    public void setDatabaseVersion(long databaseVersion) {
+        this.databaseVersion = databaseVersion;
     }
 
     public String toString() {
@@ -119,7 +132,7 @@ public class ServerAnswer implements Serializable {
                         Command exit status:    %s
                         ___________________________________
                         """,
-                eventType, arguments, Arrays.asList(extraArguments), removeMode,
+                eventType, arguments, tableRowVehicle, removeMode,
                 outputInfo, userErrors, commandExitStatus);
     }
 }

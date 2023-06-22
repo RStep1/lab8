@@ -2,6 +2,7 @@ package processing;
 
 import data.ClientRequest;
 import data.FuelType;
+import data.TableRowVehicle;
 import data.User;
 import data.Vehicle;
 import database.DatabaseCollectionManager;
@@ -139,11 +140,11 @@ public class BufferedDataBase {
         User user = clientRequest.getUser();
         if (!identifierHandler.hasElementWithId(id)) {
             MessageHolder.putMessage("No such element with this id", MessageType.USER_ERROR);
-            new ServerAnswer(EventType.UPDATE, clientRequest.getArguments(), clientRequest.getExtraArguments(), false);
+            new ServerAnswer(EventType.UPDATE, clientRequest.getArguments(), false);
         }
         if (!databaseCollectionManager.hasVehicleWithIdAndLogin(id, user.getLogin())) {
             MessageHolder.putMessage("The element you want to update does not belong to you", MessageType.USER_ERROR);
-            new ServerAnswer(EventType.UPDATE, clientRequest.getArguments(), clientRequest.getExtraArguments(), false);
+            new ServerAnswer(EventType.UPDATE, clientRequest.getArguments(), false);
         }
         if (clientRequest.getExtraArguments() == null)
             return new ServerAnswer(EventType.UPDATE, true);
@@ -175,11 +176,11 @@ public class BufferedDataBase {
             MessageHolder.putMessage(String.format(
                     "There are not enough lines in script '%s' for the '%s %s' command",
                     clientRequest.getScriptFile().getName(), commandName, arguments[0]), MessageType.USER_ERROR);
-            return new ServerAnswer(eventType, arguments, vehicleValues, false);
+            return new ServerAnswer(eventType, arguments, false);
         }
         if (executeMode == ExecuteMode.SCRIPT_MODE && 
             !ValueHandler.checkValues(vehicleValues, commandName + " " + arguments[0])) {
-            return new ServerAnswer(eventType, arguments, vehicleValues, false);
+            return new ServerAnswer(eventType, arguments, false);
         }
         Vehicle vehicle = ValueHandler.getVehicle(id, creationDate, vehicleValues);
         if (addMode == AddMode.INSERT_MODE) {
@@ -187,7 +188,7 @@ public class BufferedDataBase {
                 id = databaseCollectionManager.insertVehicle(key, vehicle, clientRequest.getUser());
             } catch (SQLException e) {
                 MessageHolder.putMessage(e.getMessage(), MessageType.USER_ERROR);
-                return new ServerAnswer(eventType, arguments, vehicleValues, false);
+                return new ServerAnswer(eventType, arguments, false);
             }
             vehicle.setId(id);
             vehicle.setUsername(clientRequest.getUser().getLogin());
@@ -196,7 +197,7 @@ public class BufferedDataBase {
                 databaseCollectionManager.updateVehicleByIdAndLogin(vehicle, clientRequest.getUser());
             } catch (SQLException e) {
                 MessageHolder.putMessage(e.getMessage(), MessageType.USER_ERROR);
-                return new ServerAnswer(eventType, arguments, vehicleValues, false);
+                return new ServerAnswer(eventType, arguments, false);
             }
             String dateTime = database.get(key).getCreationDate();
             vehicle.setCreationDate(dateTime);
@@ -205,7 +206,11 @@ public class BufferedDataBase {
         MessageHolder.putCurrentCommand(commandName + " " + arguments[0], MessageType.OUTPUT_INFO);
         MessageHolder.putMessage("Element was successfully " + addMode.getResultMessage(), MessageType.OUTPUT_INFO);
         DatabaseVersionHandler.updateVersion();
-        return new ServerAnswer(eventType, arguments, vehicleValues, true);
+        TableRowVehicle tableRowVehicle = new TableRowVehicle(id, key, vehicle.getName(), vehicle.getCoordinates().getX(),
+                                                            vehicle.getCoordinates().getY(), vehicle.getEnginePower(),
+                                                            vehicle.getDistanceTravelled(), vehicle.getType().toString(), vehicle.getFuelType().toString(),
+                                                            vehicle.getCreationDate(), vehicle.getUsername());
+        return new ServerAnswer(eventType, arguments, tableRowVehicle, true);
     }
 
     /**

@@ -65,20 +65,14 @@ public class Listener implements Runnable {
             while (this.socket.isConnected()) {
                 ServerAnswer serverAnswer = null;
                 serverAnswer = (ServerAnswer) TCPExchanger.read(bufferedInputStream);
-                // System.out.println(serverAnswer);
                 switch (serverAnswer.eventType()) {
-                    case DATABASE_INIT -> {
-                        databaseWindowController.initializeTableEvent(serverAnswer);
-                        System.out.println("init");}
-                    case INSERT -> {
-                        System.out.println("insert");}
+                    case DATABASE_INIT -> databaseWindowController.initializeTableEvent(serverAnswer);
+                    case INSERT -> databaseWindowController.insertEvnet(serverAnswer);
                     case UPDATE -> System.out.println("update");
                     case CLEAR -> System.out.println("clear");
                     case REMOVE -> System.out.println("remove");
                     case QUIT -> System.out.println("quit");
-                    case LOGIN -> {
-                        System.out.println("LOGIN EVENT");
-                        LoginWindowController.getInstance().loginEvent(serverAnswer);}
+                    case LOGIN -> LoginWindowController.getInstance().loginEvent(serverAnswer);
                     case REGISTER -> LoginWindowController.getInstance().registerEvent(serverAnswer);
                     case INFO -> {
                         databaseWindowController.func("INSERT^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");

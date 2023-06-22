@@ -1,6 +1,8 @@
 package data;
 
-public class TableRowVehicle {
+import java.io.Serializable;
+
+public class TableRowVehicle implements Serializable {
     private long id;
     private long key;
     private String name;

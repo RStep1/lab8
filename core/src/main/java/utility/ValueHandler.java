@@ -291,8 +291,8 @@ public class ValueHandler {
             newValues[i] = processes.get(i).getCorrection().correct(newValues[i]);
             CheckingResult valueCheck = processes.get(i).getChecker().check(newValues[i]);
             if (!valueCheck.getStatus()) {
-                if (exitStatus)
-                    MessageHolder.putCurrentCommand(commandName, MessageType.USER_ERROR);
+                // if (exitStatus)
+                    // MessageHolder.putCurrentCommand(commandName, MessageType.USER_ERROR);
                 MessageHolder.putMessage(valueCheck.getMessage(), MessageType.USER_ERROR);
                 exitStatus = false;
             }
