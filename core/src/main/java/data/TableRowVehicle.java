@@ -74,6 +74,16 @@ public class TableRowVehicle implements Serializable {
         return owner;
     }
 
+    public void update(TableRowVehicle tableRowVehicle) {
+        this.name = tableRowVehicle.getName();
+        this.xCoordinate = tableRowVehicle.getXCoordinate();
+        this.yCoordinate = tableRowVehicle.getYCoordinate();
+        this.enginePower = tableRowVehicle.getEnginePower();
+        this.distanceTravelled = tableRowVehicle.getDistanceTravelled();
+        this.vehicleType = tableRowVehicle.getVehicleType();
+        this.fuelType = tableRowVehicle.getFuelType();
+    }
+
 
     @Override
     public String toString() {

@@ -209,7 +209,7 @@ public class BufferedDataBase {
         TableRowVehicle tableRowVehicle = new TableRowVehicle(id, key, vehicle.getName(), vehicle.getCoordinates().getX(),
                                                             vehicle.getCoordinates().getY(), vehicle.getEnginePower(),
                                                             vehicle.getDistanceTravelled(), vehicle.getType().toString(), vehicle.getFuelType().toString(),
-                                                            vehicle.getCreationDate(), vehicle.getUsername());
+                                                            vehicle.getCreationDate(), clientRequest.getUser().getLogin());
         return new ServerAnswer(eventType, arguments, tableRowVehicle, true);
     }
 

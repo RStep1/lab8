@@ -68,7 +68,7 @@ public class Listener implements Runnable {
                 switch (serverAnswer.eventType()) {
                     case DATABASE_INIT -> databaseWindowController.initializeTableEvent(serverAnswer);
                     case INSERT -> databaseWindowController.insertEvnet(serverAnswer);
-                    case UPDATE -> System.out.println("update");
+                    case UPDATE -> databaseWindowController.updateEvent(serverAnswer);
                     case CLEAR -> System.out.println("clear");
                     case REMOVE -> System.out.println("remove");
                     case QUIT -> System.out.println("quit");

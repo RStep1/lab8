@@ -32,6 +32,7 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -66,6 +67,7 @@ public class DatabaseWindowController {
     private ObservableList<TableRowVehicle> vehicleObservableList;
     private static final String datePattern = "dd/MM/yyy - HH:mm:ss";
     private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(datePattern);
+    private long databaseVersion;
 
     @FXML
     private TableColumn<TableRowVehicle, String> creationDateColumn;
@@ -197,11 +199,8 @@ public class DatabaseWindowController {
         System.out.println("info");
     }
 
-    @FXML
-    public void onInsertButtonClick(ActionEvent event) {
-        String[] arguments = new String[1];
+    private String[] fillExtraArgumenst() {
         String[] extraArguments = new String[7];
-        arguments[0] = keyField.getText();
         extraArguments[0] = nameField.getText();
         extraArguments[1] = xField.getText();
         extraArguments[2] = yField.getText();
@@ -209,6 +208,14 @@ public class DatabaseWindowController {
         extraArguments[4] = distanceTravelledField.getText();
         extraArguments[5] = vehicleTypeChoice.getSelectionModel().getSelectedItem();
         extraArguments[6] = fuelTypeChoice.getSelectionModel().getSelectedItem();
+        return extraArguments;
+    }
+
+    @FXML
+    public void onInsertButtonClick(ActionEvent event) {
+        String[] arguments = new String[1];
+        String[] extraArguments = fillExtraArgumenst();
+        arguments[0] = keyField.getText();
         ClientRequest clientRequest = new ClientRequest(InsertCommand.getName(), arguments, extraArguments,
                                                         LoginWindowController.getInstance().getUser());
         for (int i = 0; i < Vehicle.getCountOfChangeableFields(); i++) {
@@ -258,7 +265,54 @@ public class DatabaseWindowController {
 
     @FXML
     public void onUpdateButtonClick(ActionEvent event) {
-        System.out.println("udpate");
+        String[] arguments = new String[1];
+        arguments[0] = idField.getText();
+        String[] extraArguments = fillExtraArgumenst();
+        ClientRequest clientRequest = new ClientRequest(UpdateCommand.getName(), arguments, extraArguments,
+                                                        LoginWindowController.getInstance().getUser());
+        for (int i = 0; i < Vehicle.getCountOfChangeableFields(); i++) {
+            if (extraArguments[i] == null || extraArguments[i].trim().equals("")) {
+                AlertCaller.errorAlert("All fields must be filled to update a new element");
+                return;
+            }
+        }
+        CommandValidator commandValidator = new CommandValidator();
+        if (!commandValidator.validate(clientRequest) || !ValueHandler.checkValues(extraArguments, UpdateCommand.getName())) {
+            AlertCaller.errorAlert(MessageHolder.getMessages(MessageType.USER_ERROR));
+            MessageHolder.clearMessages(MessageType.USER_ERROR);
+            return;
+        }
+        try {
+            Listener.sendRequest(clientRequest);
+        } catch (IOException e) {
+            AlertCaller.showErrorDialog("Connection lost", "Please check for firewall issues and check if the server is running.");
+            System.out.println("Connection lost");
+        }
+    }
+
+    public void updateEvent(ServerAnswer serverAnswer) {
+        if (!serverAnswer.commandExitStatus()) {
+            AlertCaller.errorAlert(MessageHolder.getMessages(MessageType.USER_ERROR));
+            MessageHolder.clearMessages(MessageType.USER_ERROR);
+            return;
+        }
+        Platform.runLater(() -> {
+            idField.clear();
+            clearFields();
+        });
+        TableRowVehicle updatedTableRowVehicle = serverAnswer.tableRowVehicle();
+        System.out.println("owner: " + updatedTableRowVehicle.getOwner());
+        for (TableRowVehicle tableRowVehicle : vehicleObservableList) {
+            if (tableRowVehicle.getId() == updatedTableRowVehicle.getId()) {
+                // int index = vehicleObservableList.indexOf(tableRowVehicle);
+                vehicleObservableList.remove(tableRowVehicle);
+                // tableRowVehicle.update(updatedTableRowVehicle);
+                break;
+            }
+        }
+        vehicleObservableList.add(updatedTableRowVehicle);
+        // Platform.runLater(() -> vehicleTable.refresh());
+        vehicleTable.refresh();
     }
 
     @FXML
