@@ -111,27 +111,31 @@
             <Label fx:id="initializationTimeLabel" prefHeight="46.0" prefWidth="166.0" textAlignment="CENTER" />
          </children>
       </HBox>
-      <HBox layoutX="743.0" layoutY="121.0" prefHeight="30.0" prefWidth="309.0" spacing="5.0">
+      <HBox layoutX="774.0" layoutY="121.0" prefHeight="30.0" prefWidth="309.0" spacing="5.0">
          <children>
             <Button fx:id="removeButton" mnemonicParsing="false" onAction="#onRemoveButtonClick" prefHeight="30.0" prefWidth="80.0" text="Remove" />
             <ChoiceBox fx:id="removeByChoiceBox" prefHeight="30.0" prefWidth="120.0" />
             <TextField fx:id="valueToRemove" prefHeight="30.0" prefWidth="100.0" />
          </children>
       </HBox>
-      <HBox layoutX="401.0" layoutY="121.0" prefHeight="30.0" prefWidth="302.0" spacing="5.0">
+      <HBox layoutX="460.0" layoutY="121.0" prefHeight="30.0" prefWidth="302.0" spacing="5.0">
          <children>
             <Button fx:id="filterButton" mnemonicParsing="false" onAction="#onFilterButtonClick" prefHeight="30.0" prefWidth="80.0" text="Filter" />
             <ChoiceBox fx:id="filterByChoiceBox" prefHeight="30.0" prefWidth="120.0" />
             <TextField fx:id="filteringValue" prefHeight="30.0" prefWidth="100.0" />
          </children>
       </HBox>
-      <HBox layoutX="49.0" layoutY="121.0" prefHeight="30.0" prefWidth="302.0" spacing="5.0">
+      <HBox layoutX="50.0" layoutY="121.0" prefHeight="30.0" prefWidth="371.0" spacing="5.0">
          <children>
             <Button fx:id="countButton" mnemonicParsing="false" onAction="#onCountButtonClick" prefHeight="30.0" prefWidth="80.0" text="Count" />
-            <ChoiceBox fx:id="countByChoiceBox" prefHeight="30.0" prefWidth="120.0" />
-            <Label fx:id="countLabel" prefHeight="30.0" prefWidth="100.0" style="-fx-background-color: #ffffff;" text="value" textAlignment="CENTER" />
+            <ChoiceBox fx:id="countByChoiceBox" prefHeight="30.0" prefWidth="102.0" />
+            <Label prefHeight="30.0" prefWidth="14.0" style="-fx-background-color: #ffffff;" text="=" textAlignment="CENTER" />
+            <TextField fx:id="countValue" prefHeight="30.0" prefWidth="82.0" />
+            <Label prefHeight="30.0" prefWidth="14.0" style="-fx-background-color: #ffffff;" text=":" textAlignment="CENTER" />
+            <Label fx:id="outputCountLabel" prefHeight="30.0" prefWidth="67.0" style="-fx-background-color: #ffffff;" text="ouput" textAlignment="CENTER" />
          </children>
       </HBox>
-      <Button fx:id="clearButton" layoutX="938.0" layoutY="626.0" mnemonicParsing="false" onAction="#onClearButtonClick" prefHeight="30.0" prefWidth="117.0" text="Clear" />
+      <Button fx:id="clearButton" layoutX="966.0" layoutY="626.0" mnemonicParsing="false" onAction="#onClearButtonClick" prefHeight="30.0" prefWidth="117.0" text="Clear" />
+      <Button fx:id="resetFilterButton" layoutX="834.0" layoutY="626.0" mnemonicParsing="false" onAction="#onResetFilterButtonClick" prefHeight="30.0" prefWidth="117.0" text="Reset filter" />
    </children>
 </AnchorPane>

@@ -59,6 +59,7 @@ import mods.MessageType;
 import mods.RemoveMode;
 import processing.CommandValidator;
 import processing.Console;
+import processing.ModeConverter;
 import processing.TCPExchanger;
 import run.MainLauncher;
 import user.Listener;
@@ -89,7 +90,10 @@ public class DatabaseWindowController {
     private ChoiceBox<String> countByChoiceBox;
 
     @FXML
-    private Label countLabel;
+    private Label outputCountLabel;
+
+    @FXML
+    private TextField countValue;
 
     @FXML
     private Button databaseQuitButton;
@@ -126,6 +130,9 @@ public class DatabaseWindowController {
 
     @FXML
     private Button infoButton;
+
+    @FXML
+    private Button resetFilterButton;
 
     @FXML
     private Label initializationTimeLabel;
@@ -204,6 +211,7 @@ public class DatabaseWindowController {
     }
 
     public void clearEvent(ServerAnswer serverAnswer) {
+        Console.println("clear event");
         // List<TableRowVehicle> toRemove = vehicleObservableList
         //     .stream()
         //     .filter(x -> x.getOwner().equals(serverAnswer.user().getLogin()))
@@ -340,13 +348,30 @@ public class DatabaseWindowController {
 
     @FXML
     public void onCountButtonClick(ActionEvent event) {
-        Console.print("count");
-        Console.println(countByChoiceBox.getValue());
+        // String countModeName = countByChoiceBox.getValue();
+        // if (countByChoiceBox.getValue() == null) {
+        //     AlertCaller.errorAlert("You have to choose the value you want to count");
+        //     return;
+        // }
+        CommandValidator commandValidator = new CommandValidator();
+        String[] arguments = new String[1];
+        arguments[0] = countValue.getText();
+        CountMode countMode = ModeConverter.GET_COUNT_MODE.apply(countByChoiceBox.getValue());
+        if (!commandValidator.validate(new ClientRequest(CountByFuelTypeCommand.getName(), arguments, countMode))) {
+            AlertCaller.errorAlert(MessageHolder.getMessages(MessageType.USER_ERROR));
+            MessageHolder.clearMessages(MessageType.USER_ERROR);
+            return;
+        }
+        System.out.println("count");
     }
 
     @FXML
     public void onFilterButtonClick(ActionEvent event) {
         Console.println("filter");
+    }
+
+    public void onResetFilterButtonClick(ActionEvent event) {
+        Console.println("reset filter");
     }
 
     @FXML
@@ -464,7 +489,7 @@ public class DatabaseWindowController {
     }
 
     private void initializeLabels() {
-        this.countLabel.setText("0");
+        this.outputCountLabel.setText("0");
         this.lastModifiedTimeLabel.setText("no changes yet");
         this.tableRecordsLabel.setText("0");
     }
