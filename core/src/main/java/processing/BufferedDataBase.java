@@ -8,6 +8,7 @@ import data.Vehicle;
 import database.DatabaseCollectionManager;
 import database.DatabaseHandler;
 import database.DatabaseUserManager;
+import exceptions.NoSuchIdException;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -164,13 +165,18 @@ public class BufferedDataBase {
         ExecuteMode executeMode = clientRequest.getExecuteMode();
         java.time.ZonedDateTime creationDate = ZonedDateTime.now();
         long key = 0, id = -1;
+        EventType eventType = (addMode == AddMode.INSERT_MODE ? EventType.INSERT : EventType.UPDATE); 
         if (addMode == AddMode.INSERT_MODE) {
             key = Long.parseLong(arguments[0]);
         } else {
             id = Long.parseLong(arguments[0]);
-            key = identifierHandler.getKeyById(id);
+            try {
+                key = identifierHandler.getKeyById(id);
+            } catch (NoSuchIdException e) {
+                MessageHolder.putMessage(e.getMessage(), MessageType.USER_ERROR);
+                return new ServerAnswer(eventType, arguments, false);
+            }
         }
-        EventType eventType = (addMode == AddMode.INSERT_MODE ? EventType.INSERT : EventType.UPDATE); 
         if (executeMode == ExecuteMode.SCRIPT_MODE && vehicleValues.length != Vehicle.getCountOfChangeableFields()) {
             MessageHolder.putCurrentCommand(commandName + " " + arguments[0], MessageType.USER_ERROR);
             MessageHolder.putMessage(String.format(

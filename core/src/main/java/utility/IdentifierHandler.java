@@ -137,7 +137,7 @@ public class IdentifierHandler {
      * Finds the element with the given id.
      * @return Corresponding key.
      */
-    public long getKeyById(long id) {
+    public long getKeyById(long id) throws NoSuchIdException {
         long key = -1;
         Enumeration<Long> keys = dataBase.keys();
         while (keys.hasMoreElements()) {
@@ -147,9 +147,7 @@ public class IdentifierHandler {
             }
         }
         if (key == -1) {
-            RuntimeException e = new NoSuchIdException(id);
-            System.err.println(e.getMessage());
-            throw e;
+            new NoSuchIdException(id);
         }
         return key;
     }
