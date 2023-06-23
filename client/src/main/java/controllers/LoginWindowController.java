@@ -93,6 +93,8 @@ public class LoginWindowController {
 
         if (!listener.isConnected()) {
             connectToServer();
+        }
+        if (!listener.isConnected()) {
             return;
         }
         try {
@@ -128,11 +130,15 @@ public class LoginWindowController {
         if (newUser == null) return;
         this.user = newUser;
 
-        if (!listener.isConnected())
+        if (!listener.isConnected()) {
             connectToServer();
+        }
+        if (!listener.isConnected()) {
+            return;
+        }
         try {
             Listener.sendRequest(new ClientRequest(RegisterCommand.getName(), newUser));
-        } catch (IOException e) {
+        } catch (NullPointerException | IOException e) {
             AlertCaller.showErrorDialog("Could not connect to server", "Please check for firewall issues and check if the server is running.");
             System.out.println("Could not connect to server");
         }
