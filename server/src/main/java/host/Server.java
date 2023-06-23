@@ -4,10 +4,12 @@ import commands.SaveCommand;
 import data.ClientRequest;
 import processing.ClientHandler;
 import processing.CommandInvoker;
+import processing.DatabaseVersionHandler;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.locks.Lock;
 
 public class Server {
     private final int port;
@@ -15,10 +17,14 @@ public class Server {
     private final CommandInvoker invoker;
     private static final ClientRequest SAVE_COMMAND = 
                 new ClientRequest(SaveCommand.getName());
+    private final Lock lock;
+    private final DatabaseVersionHandler databaseVersionHandler;
 
-    public Server(CommandInvoker invoker, int port) {
+    public Server(CommandInvoker invoker, int port, Lock lock, DatabaseVersionHandler databaseVersionHandler) {
         this.invoker = invoker;
         this.port = port;
+        this.lock = lock;
+        this.databaseVersionHandler = databaseVersionHandler;
     }
     
     private void setup() {
@@ -38,8 +44,9 @@ public class Server {
                 System.out.println("accept()");
                 Socket client = serverSocket.accept();
                 System.out.println("New client connected: " + client.getInetAddress());
+                databaseVersionHandler.addToSocketList(client);
                 
-                ClientHandler clientHandler = new ClientHandler(client, invoker);
+                ClientHandler clientHandler = new ClientHandler(client, invoker, lock);
                 Thread clientHandlerThread = new Thread(clientHandler);
                 clientHandlerThread.start();
             }

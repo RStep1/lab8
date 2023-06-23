@@ -67,6 +67,7 @@ public class Listener implements Runnable {
                 serverAnswer = (ServerAnswer) TCPExchanger.read(bufferedInputStream);
                 switch (serverAnswer.eventType()) {
                     case DATABASE_INIT -> databaseWindowController.initializeTableEvent(serverAnswer);
+                    case DATABASE_UPDATE -> databaseWindowController.updateTableViewEvent(serverAnswer);
                     case INSERT -> databaseWindowController.insertEvnet(serverAnswer);
                     case UPDATE -> databaseWindowController.updateEvent(serverAnswer);
                     case CLEAR -> databaseWindowController.clearEvent(serverAnswer);

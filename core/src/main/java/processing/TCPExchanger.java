@@ -3,6 +3,7 @@ package processing;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
@@ -13,11 +14,12 @@ import org.apache.commons.lang3.SerializationUtils;
 public class TCPExchanger {
     private static final int LENGTH_FIELD_SIZE = SerializationUtils.serialize(Integer.MAX_VALUE).length;
 
-    public static void write(BufferedOutputStream bufferedOutputStream, Serializable object) throws IOException {
+    public static void write(OutputStream bufferedOutputStream, Serializable object) throws IOException {
         byte[] objectBytes = SerializationUtils.serialize(object);
         bufferedOutputStream.write(objectBytes);
         bufferedOutputStream.flush();
     }
+
 
     public static Serializable read(BufferedInputStream bufferedInputStream) throws IOException {
         byte[] objectBytes = new byte[100000];

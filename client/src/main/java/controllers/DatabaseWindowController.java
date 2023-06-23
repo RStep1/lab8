@@ -12,6 +12,7 @@ import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
+import java.util.Observable;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TreeSet;
@@ -57,6 +58,7 @@ import mods.ExecuteMode;
 import mods.MessageType;
 import mods.RemoveMode;
 import processing.CommandValidator;
+import processing.Console;
 import processing.TCPExchanger;
 import run.MainLauncher;
 import user.Listener;
@@ -66,8 +68,6 @@ import utility.ServerAnswer;
 import utility.ValueHandler;
 
 public class DatabaseWindowController {
-
-    // private Hashtable<Long, Vehicle> vehicleHashtable;
     private ObservableList<TableRowVehicle> vehicleObservableList;
     private static final String datePattern = "dd/MM/yyy - HH:mm:ss";
     private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(datePattern);
@@ -199,18 +199,18 @@ public class DatabaseWindowController {
             Listener.sendRequest(new ClientRequest(ClearCommand.getName(), LoginWindowController.getInstance().getUser()));
         } catch (IOException e) {
             AlertCaller.showErrorDialog("Connection lost", "Please check for firewall issues and check if the server is running.");
-            System.out.println("Connection lost");
+            Console.println("Connection lost");
         }
     }
 
     public void clearEvent(ServerAnswer serverAnswer) {
-        List<TableRowVehicle> toRemove = vehicleObservableList
-            .stream()
-            .filter(x -> x.getOwner().equals(serverAnswer.user().getLogin()))
-            .toList();
-        vehicleObservableList.removeAll(toRemove);
-        Platform.runLater(() -> tableRecordsLabel.setText(Integer.toString(vehicleObservableList.size())));
-        vehicleTable.refresh();
+        // List<TableRowVehicle> toRemove = vehicleObservableList
+        //     .stream()
+        //     .filter(x -> x.getOwner().equals(serverAnswer.user().getLogin()))
+        //     .toList();
+        // vehicleObservableList.removeAll(toRemove);
+        // Platform.runLater(() -> tableRecordsLabel.setText(Integer.toString(vehicleObservableList.size())));
+        // vehicleTable.refresh();
     }
 
     @FXML
@@ -253,7 +253,7 @@ public class DatabaseWindowController {
             Listener.sendRequest(clientRequest);
         } catch (IOException e) {
             AlertCaller.showErrorDialog("Connection lost", "Please check for firewall issues and check if the server is running.");
-            System.out.println("Connection lost");
+            Console.println("Connection lost");
         }
     }
 
@@ -267,11 +267,11 @@ public class DatabaseWindowController {
             keyField.clear();
             clearFields();
         });
-        TableRowVehicle tableRowVehicle = serverAnswer.tableRowVehicle();
-        vehicleObservableList.add(tableRowVehicle);
-        Platform.runLater(() -> tableRecordsLabel.setText(Integer.toString(vehicleObservableList.size())));
-        vehicleObservableList.sort((a, b) -> (int) (a.getId() - b.getId()));
-        vehicleTable.refresh();
+        // TableRowVehicle tableRowVehicle = serverAnswer.tableRowVehicle();
+        // vehicleObservableList.add(tableRowVehicle);
+        // Platform.runLater(() -> tableRecordsLabel.setText(Integer.toString(vehicleObservableList.size())));
+        // vehicleObservableList.sort((a, b) -> (int) (a.getId() - b.getId()));
+        // vehicleTable.refresh();
     }
 
     private void clearFields() {
@@ -307,7 +307,7 @@ public class DatabaseWindowController {
             Listener.sendRequest(clientRequest);
         } catch (IOException e) {
             AlertCaller.showErrorDialog("Connection lost", "Please check for firewall issues and check if the server is running.");
-            System.out.println("Connection lost");
+            Console.println("Connection lost");
         }
     }
 
@@ -321,42 +321,42 @@ public class DatabaseWindowController {
             idField.clear();
             clearFields();
         });
-        TableRowVehicle updatedTableRowVehicle = serverAnswer.tableRowVehicle();
-        for (TableRowVehicle tableRowVehicle : vehicleObservableList) {
-            if (tableRowVehicle.getId() == updatedTableRowVehicle.getId()) {
-                vehicleObservableList.remove(tableRowVehicle);
-                break;
-            }
-        }
-        vehicleObservableList.add(updatedTableRowVehicle);
-        vehicleObservableList.sort((a, b) -> (int) (a.getId() - b.getId()));
-        vehicleTable.refresh();
+        // TableRowVehicle updatedTableRowVehicle = serverAnswer.tableRowVehicle();
+        // for (TableRowVehicle tableRowVehicle : vehicleObservableList) {
+        //     if (tableRowVehicle.getId() == updatedTableRowVehicle.getId()) {
+        //         vehicleObservableList.remove(tableRowVehicle);
+        //         break;
+        //     }
+        // }
+        // vehicleObservableList.add(updatedTableRowVehicle);
+        // vehicleObservableList.sort((tuple1, tuple2) -> (int) (tuple1.getId() - tuple2.getId()));
+        // vehicleTable.refresh();
     }
 
     @FXML
     public void onVisualizeButtonClick(ActionEvent event) {
-        System.out.println("visualize");
+        Console.println("visualize");
     }
 
     @FXML
     public void onCountButtonClick(ActionEvent event) {
-        System.out.print("count");
-        System.out.println(countByChoiceBox.getValue());
+        Console.print("count");
+        Console.println(countByChoiceBox.getValue());
     }
 
     @FXML
     public void onFilterButtonClick(ActionEvent event) {
-        System.out.println("filter");
+        Console.println("filter");
     }
 
     @FXML
     public void onRemoveButtonClick(ActionEvent event) {
-        System.out.println("remove");
+        Console.println("remove");
     }
 
     @FXML
     public void quit(ActionEvent event) {
-        System.out.println("logout");
+        Console.println("logout");
         try {
             Listener.sendRequest(new ClientRequest(QuitCommand.getName()));
         } catch (IOException e) {
@@ -391,7 +391,7 @@ public class DatabaseWindowController {
             Listener.sendRequest(new ClientRequest(ShowCommand.getName(), LoginWindowController.getInstance().getUser()));
         } catch (IOException e) {
             AlertCaller.showErrorDialog("Connection lost", "Please check for firewall issues and check if the server is running.");
-            System.out.println("Connection lost");
+            Console.println("Connection lost");
             logoutScene();
         };
         initializeLabels();
@@ -401,24 +401,12 @@ public class DatabaseWindowController {
 
     public void initializeTableEvent(ServerAnswer serverAnswer) {
         Hashtable<Long, Vehicle> vehicleHashtable = serverAnswer.database();
-        System.out.println("database size = " + vehicleHashtable.size());
+        Console.println("database size = " + vehicleHashtable.size());
         vehicleObservableList = FXCollections.observableArrayList();
         Set<Long> keySet = vehicleHashtable.keySet();
         for (Long key : keySet) {
             Vehicle vehicle = vehicleHashtable.get(key);
-            TableRowVehicle tableRowVehicle = 
-                new TableRowVehicle(vehicle.getId(),
-                                    key,
-                                    vehicle.getName(),
-                                    vehicle.getCoordinates().getX(),
-                                    vehicle.getCoordinates().getY(),
-                                    vehicle.getEnginePower(),
-                                    vehicle.getDistanceTravelled(),
-                                    vehicle.getType().toString(),
-                                    vehicle.getFuelType().toString(),
-                                    vehicle.getCreationDate(),
-                                    vehicle.getUsername()
-                );
+            TableRowVehicle tableRowVehicle = buildTableRowVehicle(vehicle, key);
             vehicleObservableList.add(tableRowVehicle);
         }
         idColumn.setCellValueFactory(new PropertyValueFactory<TableRowVehicle, Long>("id"));
@@ -437,6 +425,42 @@ public class DatabaseWindowController {
         vehicleTable.refresh();
         this.tableRecordsLabel.setText(Integer.toString(vehicleHashtable.size()));
         this.initializationTimeLabel.setText(ZonedDateTime.now().format(dateFormatter));
+        System.out.println("INIT TABLE");
+    }
+
+    public void updateTableViewEvent(ServerAnswer serverAnswer) {
+        Hashtable<Long, Vehicle> hashtable = serverAnswer.database();
+        vehicleObservableList.clear();
+        vehicleObservableList.addAll(
+            hashtable.keySet()
+            .stream()
+            .map((key -> buildTableRowVehicle(hashtable.get(key), key)))
+            .toList()
+        );
+        vehicleObservableList.sort((tuple1, tuple2) -> (int) (tuple1.getId() - tuple2.getId()));
+        Platform.runLater(() -> {
+            this.lastModifiedTimeLabel.setText(ZonedDateTime.now().format(dateFormatter));
+            this.tableRecordsLabel.setText(Integer.toString(vehicleObservableList.size()));
+        });
+        vehicleTable.refresh();
+
+        System.out.println("UPDATE TABLE");
+    }
+
+    private TableRowVehicle buildTableRowVehicle(Vehicle vehicle, Long key) {
+        return new TableRowVehicle(
+            vehicle.getId(),
+            key,
+            vehicle.getName(),
+            vehicle.getCoordinates().getX(),
+            vehicle.getCoordinates().getY(),
+            vehicle.getEnginePower(),
+            vehicle.getDistanceTravelled(),
+            vehicle.getType().toString(),
+            vehicle.getFuelType().toString(),
+            vehicle.getCreationDate(),
+            vehicle.getUsername()
+        );
     }
 
     private void initializeLabels() {
@@ -460,6 +484,6 @@ public class DatabaseWindowController {
 
 
     public void func(String s) {
-        System.out.println(s);
+        Console.println(s);
     }
 }

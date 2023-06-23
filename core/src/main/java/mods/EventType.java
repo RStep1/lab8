@@ -9,5 +9,6 @@ public enum EventType {
     QUIT,
     LOGIN,
     REGISTER,
-    INFO;
+    INFO,
+    DATABASE_UPDATE;
 }

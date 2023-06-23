@@ -10,6 +10,7 @@ import database.DatabaseHandler;
 import database.DatabaseUserManager;
 import exceptions.NoSuchIdException;
 
+import java.net.Socket;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -35,19 +36,24 @@ public class BufferedDataBase {
     private final ConcurrentHashMap<Long, Vehicle> database;
     private final Set<String> scriptCounter = new HashSet<>();
     private CommandInvoker commandInvoker;
+    private DatabaseVersionHandler databaseVersionHandler;
     private LocalDateTime lastInitTime;
     private LocalDateTime lastSaveTime;
     private final IdentifierHandler identifierHandler;
     private static final String datePattern = "dd/MM/yyy - HH:mm:ss";
     private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(datePattern);
+    private Socket socket;
 
     public BufferedDataBase(DatabaseHandler databaseHandler, DatabaseUserManager databaseUserManager,
-                            DatabaseCollectionManager databaseCollectionManager) {
+                            DatabaseCollectionManager databaseCollectionManager,
+                            DatabaseVersionHandler databaseVersionHandler) {
         this.databaseHandler = databaseHandler;
         this.databaseUserManager = databaseUserManager;
         this.databaseCollectionManager = databaseCollectionManager;
+        this.databaseVersionHandler = databaseVersionHandler;
         // dataBase = FileHandler.loadDataBase();
         database = databaseCollectionManager.loadDataBase();
+        databaseVersionHandler.loadDatabase(database);
         identifierHandler = new IdentifierHandler(database);
         lastInitTime = database.isEmpty() && lastInitTime == null ? null : LocalDateTime.now();
     }
@@ -211,7 +217,7 @@ public class BufferedDataBase {
         database.put(key, vehicle);
         MessageHolder.putCurrentCommand(commandName + " " + arguments[0], MessageType.OUTPUT_INFO);
         MessageHolder.putMessage("Element was successfully " + addMode.getResultMessage(), MessageType.OUTPUT_INFO);
-        DatabaseVersionHandler.updateVersion();
+        databaseVersionHandler.updateVersion();
         TableRowVehicle tableRowVehicle = new TableRowVehicle(id, key, vehicle.getName(), vehicle.getCoordinates().getX(),
                                                             vehicle.getCoordinates().getY(), vehicle.getEnginePower(),
                                                             vehicle.getDistanceTravelled(), vehicle.getType().toString(), vehicle.getFuelType().toString(),
@@ -248,7 +254,7 @@ public class BufferedDataBase {
         MessageHolder.putCurrentCommand(RemoveKeyCommand.getName() + " " + arguments[0], MessageType.OUTPUT_INFO);
         MessageHolder.putMessage(String.format(
                 "Element with key = %s was successfully removed", key), MessageType.OUTPUT_INFO);
-        DatabaseVersionHandler.updateVersion();
+        databaseVersionHandler.updateVersion();
         return new ServerAnswer(eventType, arguments, clientRequest.getRemoveMode(), true);
     }
 
@@ -279,7 +285,7 @@ public class BufferedDataBase {
             }
             MessageHolder.putMessage("Collection successfully cleared", MessageType.OUTPUT_INFO);
         }
-        DatabaseVersionHandler.updateVersion();
+        databaseVersionHandler.updateVersion();
         return new ServerAnswer(EventType.CLEAR, true);
     }
 
@@ -370,7 +376,7 @@ public class BufferedDataBase {
                     "%s elements were successfully removed with distance travelled %s %s",
                     countOfRemoved, removeMode.getSymbol(), userDistanceTravelled), MessageType.OUTPUT_INFO);
         }
-        DatabaseVersionHandler.updateVersion();
+        databaseVersionHandler.updateVersion();
         return new ServerAnswer(EventType.REMOVE, arguments, clientRequest.getRemoveMode(), true);
     }
 
@@ -403,7 +409,7 @@ public class BufferedDataBase {
         else
             MessageHolder.putMessage(
                     String.format("%s elements was successfully removed", countOfRemovedKeys), MessageType.OUTPUT_INFO);
-        DatabaseVersionHandler.updateVersion();
+        databaseVersionHandler.updateVersion();
         return new ServerAnswer(EventType.REMOVE, arguments, clientRequest.getRemoveMode(), true);
     }
 
@@ -439,7 +445,7 @@ public class BufferedDataBase {
             MessageHolder.putMessage(String.format(
                     "%s elements were successfully removed with engine power = %s",
                     countOfRemoved, userEnginePower), MessageType.OUTPUT_INFO);
-        DatabaseVersionHandler.updateVersion();
+        databaseVersionHandler.updateVersion();
         return new ServerAnswer(EventType.REMOVE, arguments, clientRequest.getRemoveMode(), true);
     }
 

@@ -1,22 +1,48 @@
 package processing;
 
+import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.Lock;
+
+import data.Vehicle;
+import mods.EventType;
+import utility.ServerAnswer;
 
 public class DatabaseVersionHandler {
-    private static final AtomicLong DATABASE_VERSION = new AtomicLong(0);
+    private volatile ArrayList<Socket> socketList = new ArrayList<>();
+    private Lock lock;
+    private ConcurrentHashMap<Long, Vehicle> database;
 
-    public static long getVersion() {
-        return DATABASE_VERSION.get();
+    public DatabaseVersionHandler(Lock lock) {
+        this.lock = lock;
     }
 
-    public static synchronized void updateVersion() {
-        DATABASE_VERSION.incrementAndGet();
-        if (DATABASE_VERSION.get() == Long.MAX_VALUE) {
-            DATABASE_VERSION.set(0);
+    public void updateVersion() {
+        lock.lock();
+        for (Socket socket : socketList) {
+            try {
+                Hashtable<Long, Vehicle> hashtable = new Hashtable<>();
+                hashtable.putAll(database);
+                TCPExchanger.write(socket.getOutputStream(), new ServerAnswer(EventType.DATABASE_UPDATE, true, hashtable));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+        lock.unlock();
     }
 
-    public static synchronized boolean compareVersions(long userVersion) {
-        return DATABASE_VERSION.get() == userVersion;
+    public void loadDatabase(ConcurrentHashMap<Long, Vehicle> database) {
+        this.database = database;
+    }
+
+    public synchronized void addToSocketList(Socket socket) {
+        socketList.add(socket);
     }
 }

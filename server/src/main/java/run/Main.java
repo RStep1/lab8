@@ -3,10 +3,13 @@ package run;
 import mods.MessageType;
 import processing.BufferedDataBase;
 import processing.Console;
+import processing.DatabaseVersionHandler;
 import processing.RequestHandler;
 import processing.CommandInvoker;
 
 import java.util.Scanner;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import commands.*;
 import database.DatabaseCollectionManager;
@@ -41,7 +44,10 @@ public class Main {
         DatabaseHandler databaseHandler = new DatabaseHandler("jdbc:postgresql://" + host + ":5432/studs", databaseUsername, password);
         DatabaseUserManager databaseUserManager = new DatabaseUserManager(databaseHandler);
         DatabaseCollectionManager databaseCollectionManager = new DatabaseCollectionManager(databaseHandler);
-        BufferedDataBase bufferedDataBase = new BufferedDataBase(databaseHandler, databaseUserManager, databaseCollectionManager);
+        Lock lock = new ReentrantLock();
+        DatabaseVersionHandler databaseVersionHandler = new DatabaseVersionHandler(lock);
+        BufferedDataBase bufferedDataBase = new BufferedDataBase(databaseHandler, databaseUserManager,
+                                                                 databaseCollectionManager, databaseVersionHandler);
         CommandInvoker invoker = new CommandInvoker(new HelpCommand(bufferedDataBase),
                 new InfoCommand(bufferedDataBase), new ShowCommand(bufferedDataBase),
                 new InsertCommand(bufferedDataBase), new UpdateCommand(bufferedDataBase),
@@ -57,7 +63,7 @@ public class Main {
                 new LoginCommand(bufferedDataBase),
                 new QuitCommand(bufferedDataBase));
         RequestHandler requestHandler = new RequestHandler(invoker);
-        Server server = new Server(invoker, port);
+        Server server = new Server(invoker, port, lock, databaseVersionHandler);
         bufferedDataBase.setCommandInvoker(invoker);
         Console.println("Server is running...");
 
