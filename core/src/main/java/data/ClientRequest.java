@@ -12,6 +12,8 @@ public class ClientRequest implements Serializable {
     private final String[] arguments;
     private String[] extraArguments;
     private RemoveMode removeMode;
+    private CountMode countMode;
+    private FilterMode filterMode;
     private final ExecuteMode executeMode;
     private File scriptFile;
     private User user;
@@ -45,6 +47,28 @@ public class ClientRequest implements Serializable {
         this.commandName = commandName;
         this.arguments = null;
         this.executeMode = ExecuteMode.COMMAND_MODE;
+    }
+
+    public ClientRequest(String commandName, String[] arguments) {
+        this.commandName = commandName;
+        this.arguments = arguments;
+        this.executeMode = ExecuteMode.COMMAND_MODE;
+    }
+
+    public ClientRequest(String commandName, String[] arguments, CountMode countMode) {
+        this(commandName, arguments);
+        this.countMode = countMode;
+    }
+
+    public ClientRequest(String commandName, String[] arguments, FilterMode filterMode) {
+        this(commandName, arguments);
+        this.filterMode = filterMode;
+    }
+
+    public ClientRequest(String commandName, String[] argumensts, RemoveMode removeMode, User user) {
+        this(commandName, argumensts);
+        this.removeMode = removeMode;
+        this.user = user;
     }
 
     public String getCommandName() {
