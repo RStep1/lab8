@@ -8,14 +8,18 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collector;
 
 import javax.swing.text.html.parser.Element;
+
+import org.controlsfx.control.tableview2.filter.filtereditor.SouthFilter;
 
 import commands.*;
 import data.ClientRequest;
@@ -191,12 +195,27 @@ public class DatabaseWindowController {
 
     @FXML
     public void onClearButtonClick(ActionEvent event) {
-        System.out.println("clear");
+        try {
+            Listener.sendRequest(new ClientRequest(ClearCommand.getName(), LoginWindowController.getInstance().getUser()));
+        } catch (IOException e) {
+            AlertCaller.showErrorDialog("Connection lost", "Please check for firewall issues and check if the server is running.");
+            System.out.println("Connection lost");
+        }
+    }
+
+    public void clearEvent(ServerAnswer serverAnswer) {
+        List<TableRowVehicle> toRemove = vehicleObservableList
+            .stream()
+            .filter(x -> x.getOwner().equals(serverAnswer.user().getLogin()))
+            .toList();
+        vehicleObservableList.removeAll(toRemove);
+        Platform.runLater(() -> tableRecordsLabel.setText(Integer.toString(vehicleObservableList.size())));
+        vehicleTable.refresh();
     }
 
     @FXML
     public void onInfoButtonClick(ActionEvent event) {
-        System.out.println("info");
+        
     }
 
     private String[] fillExtraArgumenst() {
@@ -250,6 +269,8 @@ public class DatabaseWindowController {
         });
         TableRowVehicle tableRowVehicle = serverAnswer.tableRowVehicle();
         vehicleObservableList.add(tableRowVehicle);
+        Platform.runLater(() -> tableRecordsLabel.setText(Integer.toString(vehicleObservableList.size())));
+        vehicleObservableList.sort((a, b) -> (int) (a.getId() - b.getId()));
         vehicleTable.refresh();
     }
 
@@ -301,17 +322,14 @@ public class DatabaseWindowController {
             clearFields();
         });
         TableRowVehicle updatedTableRowVehicle = serverAnswer.tableRowVehicle();
-        System.out.println("owner: " + updatedTableRowVehicle.getOwner());
         for (TableRowVehicle tableRowVehicle : vehicleObservableList) {
             if (tableRowVehicle.getId() == updatedTableRowVehicle.getId()) {
-                // int index = vehicleObservableList.indexOf(tableRowVehicle);
                 vehicleObservableList.remove(tableRowVehicle);
-                // tableRowVehicle.update(updatedTableRowVehicle);
                 break;
             }
         }
         vehicleObservableList.add(updatedTableRowVehicle);
-        // Platform.runLater(() -> vehicleTable.refresh());
+        vehicleObservableList.sort((a, b) -> (int) (a.getId() - b.getId()));
         vehicleTable.refresh();
     }
 
@@ -415,7 +433,7 @@ public class DatabaseWindowController {
         creationDateColumn.setCellValueFactory(new PropertyValueFactory<TableRowVehicle, String>("creationDate"));
         ownerColumn.setCellValueFactory(new PropertyValueFactory<TableRowVehicle, String>("owner"));
 
-        vehicleTable.setItems(vehicleObservableList);
+        vehicleTable.setItems(vehicleObservableList.sorted());
         vehicleTable.refresh();
         this.tableRecordsLabel.setText(Integer.toString(vehicleHashtable.size()));
         this.initializationTimeLabel.setText(ZonedDateTime.now().format(dateFormatter));

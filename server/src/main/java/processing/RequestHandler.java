@@ -40,6 +40,7 @@ public class RequestHandler {
         }
         serverAnswer.setMessages(MessageHolder.getOutputInfo(), MessageHolder.getUserErrors());
         serverAnswer.setUser(clientRequest.getUser());
+        System.out.println(serverAnswer.user().getLogin());
         return serverAnswer;
     }
 }

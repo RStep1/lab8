@@ -69,7 +69,7 @@ public class Listener implements Runnable {
                     case DATABASE_INIT -> databaseWindowController.initializeTableEvent(serverAnswer);
                     case INSERT -> databaseWindowController.insertEvnet(serverAnswer);
                     case UPDATE -> databaseWindowController.updateEvent(serverAnswer);
-                    case CLEAR -> System.out.println("clear");
+                    case CLEAR -> databaseWindowController.clearEvent(serverAnswer);
                     case REMOVE -> System.out.println("remove");
                     case QUIT -> System.out.println("quit");
                     case LOGIN -> LoginWindowController.getInstance().loginEvent(serverAnswer);
