@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
@@ -27,12 +28,23 @@ public class DatabaseVersionHandler {
     public void updateVersion() {
         lock.lock();
         for (Socket socket : socketList) {
+            if (socket.isClosed())
+                continue;
             try {
                 Hashtable<Long, Vehicle> hashtable = new Hashtable<>();
                 hashtable.putAll(database);
                 TCPExchanger.write(socket.getOutputStream(), new ServerAnswer(EventType.DATABASE_UPDATE, true, hashtable));
             } catch (IOException e) {
-                e.printStackTrace();
+                // e.printStackTrace();
+                Console.println("socket is closed " + socket);
+            }
+        }
+        Iterator<Socket> socketIterator = socketList.iterator();
+        while(socketIterator.hasNext()) {
+            Socket socket = socketIterator.next();
+            if (socket.isClosed()) {
+                socketList.remove(socket);
+                // System.out.println("removing closed socket");
             }
         }
         lock.unlock();
