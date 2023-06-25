@@ -280,11 +280,6 @@ public class DatabaseWindowController {
             keyField.clear();
             clearFields();
         });
-        // TableRowVehicle tableRowVehicle = serverAnswer.tableRowVehicle();
-        // vehicleObservableList.add(tableRowVehicle);
-        // Platform.runLater(() -> tableRecordsLabel.setText(Integer.toString(vehicleObservableList.size())));
-        // vehicleObservableList.sort((a, b) -> (int) (a.getId() - b.getId()));
-        // vehicleTable.refresh();
     }
 
     private void clearFields() {
@@ -353,11 +348,6 @@ public class DatabaseWindowController {
 
     @FXML
     public void onCountButtonClick(ActionEvent event) {
-        // String countModeName = countByChoiceBox.getValue();
-        // if (countByChoiceBox.getValue() == null) {
-        //     AlertCaller.errorAlert("You have to choose the value you want to count");
-        //     return;
-        // }
         CommandValidator commandValidator = new CommandValidator();
         String[] arguments = new String[1];
         arguments[0] = countValue.getText();
@@ -384,6 +374,7 @@ public class DatabaseWindowController {
         }
         vehicleObservableList.clear();
         vehicleObservableList.addAll(getFilteredRowVehicles());
+        Platform.runLater(() -> this.tableRecordsLabel.setText(Integer.toString(vehicleObservableList.size())));
         vehicleTable.refresh();
         Console.println("filter");
     }
@@ -396,6 +387,7 @@ public class DatabaseWindowController {
         currentFilterValue = "";
         vehicleObservableList.clear();
         vehicleObservableList.addAll(bufferedVehicles);
+        Platform.runLater(() -> this.tableRecordsLabel.setText(Integer.toString(vehicleObservableList.size())));
         vehicleTable.refresh();
         System.out.println("reset filter");
     }
@@ -485,15 +477,16 @@ public class DatabaseWindowController {
         Hashtable<Long, Vehicle> hashtable = serverAnswer.database();
         vehicleObservableList.clear();
         bufferedVehicles.clear();
-        vehicleObservableList.addAll(
+        bufferedVehicles.addAll(
             hashtable.keySet()
             .stream()
             .map((key -> buildTableRowVehicle(hashtable.get(key), key)))
             .toList()
         );
-        bufferedVehicles.addAll(vehicleObservableList);
         if (currentFilterMode != null) {
-            vehicleObservableList = getFilteredRowVehicles();
+            vehicleObservableList.addAll(getFilteredRowVehicles());
+        } else {
+            vehicleObservableList.addAll(bufferedVehicles);
         }
         vehicleObservableList.sort((tuple1, tuple2) -> (int) (tuple1.getId() - tuple2.getId()));
         Platform.runLater(() -> {
@@ -520,7 +513,6 @@ public class DatabaseWindowController {
                                         ValueTransformer.SET_FUEL_TYPE.apply(currentFilterValue).getSerialNumber())
                                 .collect(Collectors.toCollection(FXCollections::observableArrayList));
         }
-        System.out.println("filter result = " + filteredVehicles.size());
         return filteredVehicles;
     }
 
