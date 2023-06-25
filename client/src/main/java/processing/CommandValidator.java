@@ -2,6 +2,8 @@ package processing;
 
 import commands.*;
 import data.ClientRequest;
+import data.CountMode;
+import data.FilterMode;
 import exceptions.WrongAmountOfArgumentsException;
 import mods.EventType;
 import mods.ExecuteMode;
@@ -148,6 +150,34 @@ public class CommandValidator {
         return validateArguments(clientRequest);
     }
 
+    private boolean validateCountCommand(ClientRequest clientRequest) {
+        CountMode countMode = clientRequest.getCountMode();
+        if (countMode == null) {
+            MessageHolder.putMessage("You have to choose the value you want to count", MessageType.USER_ERROR);
+            return false;
+        }
+        boolean isCorrect = false;
+        switch (countMode) {
+            case BY_ENGINE_POWER -> isCorrect = validateEnginePower(clientRequest);
+            case BY_DISTANCE_TRAVELLED -> isCorrect = validateDistanceTravelled(clientRequest);
+        }
+        return isCorrect;
+    }
+
+    private boolean validateFilterCommand(ClientRequest clientRequest) {
+        FilterMode filterMode = clientRequest.getFilterMode();
+        if (filterMode == null) {
+            MessageHolder.putMessage("You have to choose the filter mode", MessageType.USER_ERROR);
+            return false;
+        }
+        boolean isCorrect = false;
+        switch (filterMode) {
+            case LESS_THEN_ENGINE_POWER -> isCorrect = validateEnginePower(clientRequest);
+            case LESS_THEN_FUEL_TYPE -> isCorrect = validateFuelType(clientRequest);
+        }
+        return isCorrect;
+    }
+
     private boolean validateArguments(ClientRequest clientRequest) {
         boolean isCorrect;
         switch (clientRequest.getCommandName()) {
@@ -160,6 +190,8 @@ public class CommandValidator {
             case "count_by_fuel_type", "filter_less_than_fuel_type" -> isCorrect = validateFuelType(clientRequest);
             case "register", "login" -> isCorrect = validateUser(clientRequest);
             case "quit" -> isCorrect = checkNumberOfArguments(clientRequest, 0);
+            case "count" -> isCorrect = validateCountCommand(clientRequest);
+            case "filter" -> isCorrect = validateFilterCommand(clientRequest);
             default -> {
                 MessageHolder.putMessage(String.format(
                         "'%s': No such command", clientRequest.getCommandName()), MessageType.USER_ERROR);

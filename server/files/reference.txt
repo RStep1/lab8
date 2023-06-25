@@ -3,6 +3,7 @@ execute_script <file_name>: reads and executes a script from the specified file.
 show: prints to standard output all elements of the collection in string representation
 clear: clears the collection
 save: save the collection to file
+count: count elements by some column
 insert <key> <element>: adds a new element with the given key
 update <id> <element>: updates the value of the collection element whose id is equal to the given one
 remove_greater <distanceTravelled>: removes from the collection all elements whose distanceTraveled field value is greater than the specified value

@@ -76,13 +76,13 @@ public class Listener implements Runnable {
                     case LOGIN -> LoginWindowController.getInstance().loginEvent(serverAnswer);
                     case REGISTER -> LoginWindowController.getInstance().registerEvent(serverAnswer);
                     case INFO -> {
-                        databaseWindowController.func("INSERT^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
                         System.out.println("some info");}
                 }
             }
         } catch (IOException | NullPointerException e) {
             e.printStackTrace();
-            databaseWindowController.logoutScene();
+            if (databaseWindowController != null)
+                databaseWindowController.logoutScene();
         }
     }
 

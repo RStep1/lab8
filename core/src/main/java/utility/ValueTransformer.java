@@ -31,7 +31,7 @@ public class ValueTransformer {
     private static final Function<java.time.ZonedDateTime, String> SET_CREATION_DATE = (creationDateTime) ->
             creationDateTime.format(zonedDateFormatter);
 
-    private static final Function<String, Integer> SET_ENGINE_POWER = Integer::parseInt;
+    public static final Function<String, Integer> SET_ENGINE_POWER = Integer::parseInt;
 
     private static final Function<String, Long> SET_DISTANCE_TRAVELLED = Long::parseLong;
 

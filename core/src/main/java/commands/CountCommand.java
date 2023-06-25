@@ -7,21 +7,19 @@ import utility.ServerAnswer;
  * Acts as a wrapper for the 'exit' command.
  * Calls the method containing the implementation of this command.
  */
-public class ExitCommand implements Command {
-    private BufferedDataBase dataBase;
-    private static final String NAME = "exit";
+public class CountCommand implements Command {
+    private static final String NAME = "count";
     private static final String ARGUMENTS = "";
     private static final String DESCRIPTION =
-            "terminates the program without saving to a file";
-    private static final int COUNT_OF_ARGUMENTS = 0;
+            "count elements by some column";
+    private static final int COUNT_OF_ARGUMENTS = 1;
     private static final int COUNT_OF_EXTRA_ARGUMENTS = 0;
-    public ExitCommand(BufferedDataBase dataBase) {
-        this.dataBase = dataBase;
+    public CountCommand() {
     }
 
     @Override
     public ServerAnswer execute(ClientRequest commandArguments) {
-        return dataBase.exit(commandArguments);
+        return null;
     }
 
     public static String getName() {

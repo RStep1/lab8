@@ -17,9 +17,11 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import javax.swing.text.html.parser.Element;
 
+import org.controlsfx.control.table.FilterValue;
 import org.controlsfx.control.tableview2.filter.filtereditor.SouthFilter;
 
 import commands.*;
@@ -67,12 +69,15 @@ import utility.AlertCaller;
 import utility.MessageHolder;
 import utility.ServerAnswer;
 import utility.ValueHandler;
+import utility.ValueTransformer;
 
 public class DatabaseWindowController {
     private ObservableList<TableRowVehicle> vehicleObservableList;
+    private ObservableList<TableRowVehicle> bufferedVehicles;
     private static final String datePattern = "dd/MM/yyy - HH:mm:ss";
     private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(datePattern);
-    private long databaseVersion;
+    private volatile FilterMode currentFilterMode;
+    private volatile String currentFilterValue;
 
     @FXML
     private TableColumn<TableRowVehicle, String> creationDateColumn;
@@ -356,7 +361,7 @@ public class DatabaseWindowController {
         CommandValidator commandValidator = new CommandValidator();
         String[] arguments = new String[1];
         arguments[0] = countValue.getText();
-        CountMode countMode = ModeConverter.GET_COUNT_MODE.apply(countByChoiceBox.getValue());
+        CountMode countMode = ModeConverter.GET_COUNT_MODE.apply(countByChoiceBox == null ? countByChoiceBox.getValue() : "");
         if (!commandValidator.validate(new ClientRequest(CountByFuelTypeCommand.getName(), arguments, countMode))) {
             AlertCaller.errorAlert(MessageHolder.getMessages(MessageType.USER_ERROR));
             MessageHolder.clearMessages(MessageType.USER_ERROR);
@@ -367,11 +372,32 @@ public class DatabaseWindowController {
 
     @FXML
     public void onFilterButtonClick(ActionEvent event) {
+        currentFilterMode = ModeConverter.GET_FILTER_MODE.apply(filterByChoiceBox.getValue());
+        currentFilterValue = filteringValue.getText();
+        CommandValidator commandValidator = new CommandValidator();
+        String[] arguments = new String[1];
+        arguments[0] = currentFilterValue;
+        if (!commandValidator.validate(new ClientRequest("filter", arguments, currentFilterMode))) {
+            AlertCaller.errorAlert(MessageHolder.getMessages(MessageType.USER_ERROR));
+            MessageHolder.clearMessages(MessageType.USER_ERROR);
+            return;
+        }
+        vehicleObservableList.clear();
+        vehicleObservableList.addAll(getFilteredRowVehicles());
+        vehicleTable.refresh();
         Console.println("filter");
     }
 
+    @FXML
     public void onResetFilterButtonClick(ActionEvent event) {
-        Console.println("reset filter");
+        filterByChoiceBox.setValue(null);
+        filteringValue.clear();
+        currentFilterMode = null;
+        currentFilterValue = "";
+        vehicleObservableList.clear();
+        vehicleObservableList.addAll(bufferedVehicles);
+        vehicleTable.refresh();
+        System.out.println("reset filter");
     }
 
     @FXML
@@ -428,6 +454,7 @@ public class DatabaseWindowController {
         Hashtable<Long, Vehicle> vehicleHashtable = serverAnswer.database();
         Console.println("database size = " + vehicleHashtable.size());
         vehicleObservableList = FXCollections.observableArrayList();
+        bufferedVehicles = FXCollections.observableArrayList();
         Set<Long> keySet = vehicleHashtable.keySet();
         for (Long key : keySet) {
             Vehicle vehicle = vehicleHashtable.get(key);
@@ -446,6 +473,7 @@ public class DatabaseWindowController {
         creationDateColumn.setCellValueFactory(new PropertyValueFactory<TableRowVehicle, String>("creationDate"));
         ownerColumn.setCellValueFactory(new PropertyValueFactory<TableRowVehicle, String>("owner"));
 
+        bufferedVehicles.addAll(vehicleObservableList);
         vehicleTable.setItems(vehicleObservableList.sorted());
         vehicleTable.refresh();
         this.tableRecordsLabel.setText(Integer.toString(vehicleHashtable.size()));
@@ -453,15 +481,20 @@ public class DatabaseWindowController {
         System.out.println("INIT TABLE");
     }
 
-    public void updateTableViewEvent(ServerAnswer serverAnswer) {
+    public synchronized void updateTableViewEvent(ServerAnswer serverAnswer) {
         Hashtable<Long, Vehicle> hashtable = serverAnswer.database();
         vehicleObservableList.clear();
+        bufferedVehicles.clear();
         vehicleObservableList.addAll(
             hashtable.keySet()
             .stream()
             .map((key -> buildTableRowVehicle(hashtable.get(key), key)))
             .toList()
         );
+        bufferedVehicles.addAll(vehicleObservableList);
+        if (currentFilterMode != null) {
+            vehicleObservableList = getFilteredRowVehicles();
+        }
         vehicleObservableList.sort((tuple1, tuple2) -> (int) (tuple1.getId() - tuple2.getId()));
         Platform.runLater(() -> {
             this.lastModifiedTimeLabel.setText(ZonedDateTime.now().format(dateFormatter));
@@ -470,6 +503,25 @@ public class DatabaseWindowController {
         vehicleTable.refresh();
 
         System.out.println("UPDATE TABLE");
+    }
+
+    private ObservableList<TableRowVehicle> getFilteredRowVehicles() {
+        ObservableList<TableRowVehicle> filteredVehicles = FXCollections.observableArrayList();
+        switch (currentFilterMode) {
+                case LESS_THEN_ENGINE_POWER -> filteredVehicles = 
+                        bufferedVehicles.stream()
+                                .filter(x -> x.getEnginePower() < ValueTransformer.SET_ENGINE_POWER.apply(currentFilterValue))
+                                .collect(Collectors.toCollection(FXCollections::observableArrayList));
+                case LESS_THEN_FUEL_TYPE -> filteredVehicles = 
+                        bufferedVehicles.stream()
+                                .filter(x -> 
+                                ValueTransformer.SET_FUEL_TYPE
+                                 .apply(x.getFuelType()).getSerialNumber() < 
+                                        ValueTransformer.SET_FUEL_TYPE.apply(currentFilterValue).getSerialNumber())
+                                .collect(Collectors.toCollection(FXCollections::observableArrayList));
+        }
+        System.out.println("filter result = " + filteredVehicles.size());
+        return filteredVehicles;
     }
 
     private TableRowVehicle buildTableRowVehicle(Vehicle vehicle, Long key) {
@@ -496,7 +548,7 @@ public class DatabaseWindowController {
     
     private void initializeChoiceBoxes() {
         for (CountMode countMode : CountMode.values()) 
-            countByChoiceBox.getItems().add(countMode.getName());
+            countByChoiceBox.getItems().add(countMode.getDisplayName());
         for (FilterMode filterMode : FilterMode.values())
             filterByChoiceBox.getItems().add(filterMode.getName());
         for (RemoveMode removeMode : RemoveMode.values())
@@ -505,10 +557,5 @@ public class DatabaseWindowController {
             vehicleTypeChoice.getItems().add(vehicleType.toString());
         for (FuelType fuelType : FuelType.values())
             fuelTypeChoice.getItems().add(fuelType.toString());
-    }
-
-
-    public void func(String s) {
-        Console.println(s);
     }
 }

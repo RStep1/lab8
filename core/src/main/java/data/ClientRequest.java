@@ -99,6 +99,14 @@ public class ClientRequest implements Serializable {
         return user;
     }
 
+    public CountMode getCountMode() {
+        return countMode;
+    }
+
+    public FilterMode getFilterMode() {
+        return filterMode;
+    }
+
     public void setScriptFile(File scriptFile) {
         this.scriptFile = scriptFile;
     }

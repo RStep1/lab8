@@ -1,13 +1,13 @@
 package data;
 
 public enum  CountMode {
-    BY_FUEL_TYPE("by fuel type"),
+    BY_DISTANCE_TRAVELLED("by distance travelled"),
     BY_ENGINE_POWER("by engine power");
-    private final String name;
-    CountMode(String name) {
-        this.name = name;
+    private final String displayName;
+    CountMode(String displayName) {
+        this.displayName = displayName;
     }
-    public String getName() {
-        return name;
+    public String getDisplayName() {
+        return displayName;
     }
 }
