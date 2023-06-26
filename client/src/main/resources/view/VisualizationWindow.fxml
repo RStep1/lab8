@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="750.0" prefWidth="1400.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.VisualizationWindowController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="750.0" prefWidth="750.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.VisualizationWindowController">
    <children>
-      <GridPane fx:id="gridPane" gridLinesVisible="true" layoutX="427.0" layoutY="77.0" prefHeight="600.0" prefWidth="600.0">
+      <GridPane fx:id="gridPane" gridLinesVisible="true" layoutX="75.0" layoutY="75.0" prefHeight="600.0" prefWidth="600.0">
         <columnConstraints>
             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -43,5 +47,20 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
       </GridPane>
+      <Button fx:id="closeGameButton" layoutX="545.0" layoutY="31.0" mnemonicParsing="false" onAction="#onCloseGameButtonClick" prefHeight="37.0" prefWidth="129.0" text="Back to main menu" />
+      <HBox layoutX="75.0" layoutY="31.0" prefHeight="38.0" prefWidth="123.0">
+         <children>
+            <Label prefHeight="40.0" prefWidth="48.0" text="Score:">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+            <Label fx:id="scoreLabel" prefHeight="40.0" prefWidth="77.0" text="0">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+         </children>
+      </HBox>
    </children>
 </AnchorPane>

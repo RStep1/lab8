@@ -34,6 +34,8 @@ import data.TableRowVehicle;
 import data.User;
 import data.Vehicle;
 import data.VehicleType;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -54,8 +56,10 @@ import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import mods.ExecuteMode;
 import mods.MessageType;
 import mods.RemoveMode;
@@ -333,7 +337,22 @@ public class DatabaseWindowController {
 
     @FXML
     public void onVisualizeButtonClick(ActionEvent event) {
-        
+        try {
+            Stage stage = new Stage();
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(MainLauncher.getVisualizationWindowPath()));
+            Parent root = fxmlLoader.load();
+            stage.setTitle("Snake game");
+            // stage.getIcons().add(new Image());
+            Scene snakeScene = new Scene(root, MainLauncher.getSceneHeight(), MainLauncher.getSceneHeight());
+            stage.centerOnScreen();
+            stage.setScene(snakeScene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // Timeline timeline = new Timeline(new KeyFrame(Duration.millis(150), event -> ));
+        // timeline.setCycleCount(Timeline.INDEFINITE);
+        // timeline.play();
     }
 
     @FXML
