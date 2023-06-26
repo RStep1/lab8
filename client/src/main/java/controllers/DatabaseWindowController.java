@@ -329,21 +329,11 @@ public class DatabaseWindowController {
             idField.clear();
             clearFields();
         });
-        // TableRowVehicle updatedTableRowVehicle = serverAnswer.tableRowVehicle();
-        // for (TableRowVehicle tableRowVehicle : vehicleObservableList) {
-        //     if (tableRowVehicle.getId() == updatedTableRowVehicle.getId()) {
-        //         vehicleObservableList.remove(tableRowVehicle);
-        //         break;
-        //     }
-        // }
-        // vehicleObservableList.add(updatedTableRowVehicle);
-        // vehicleObservableList.sort((tuple1, tuple2) -> (int) (tuple1.getId() - tuple2.getId()));
-        // vehicleTable.refresh();
     }
 
     @FXML
     public void onVisualizeButtonClick(ActionEvent event) {
-        Console.println("visualize");
+        
     }
 
     @FXML
