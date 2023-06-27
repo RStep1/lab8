@@ -344,7 +344,6 @@ public class DatabaseWindowController {
             return;
         }
         try {
-            // Stage stage = MainLauncher.getPrimaryStage();
             gameStage = new Stage();
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(MainLauncher.getVisualizationWindowPath()));
             Parent gameWindow = fxmlLoader.load();
@@ -361,9 +360,6 @@ public class DatabaseWindowController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        // Timeline timeline = new Timeline(new KeyFrame(Duration.millis(150), event -> ));
-        // timeline.setCycleCount(Timeline.INDEFINITE);
-        // timeline.play();
     }
 
     @FXML
@@ -371,13 +367,20 @@ public class DatabaseWindowController {
         CommandValidator commandValidator = new CommandValidator();
         String[] arguments = new String[1];
         arguments[0] = countValue.getText();
-        CountMode countMode = ModeConverter.GET_COUNT_MODE.apply(countByChoiceBox == null ? countByChoiceBox.getValue() : "");
-        if (!commandValidator.validate(new ClientRequest(CountByFuelTypeCommand.getName(), arguments, countMode))) {
+        CountMode countMode = ModeConverter.GET_COUNT_MODE.apply(countByChoiceBox.getValue());
+        if (!commandValidator.validate(new ClientRequest(CountCommand.getName(), arguments, countMode))) {
             AlertCaller.errorAlert(MessageHolder.getMessages(MessageType.USER_ERROR));
             MessageHolder.clearMessages(MessageType.USER_ERROR);
             return;
         }
-        System.out.println("count");
+        long count = 0;
+        switch (countMode) {
+            case BY_DISTANCE_TRAVELLED -> count = 
+                vehicleObservableList.stream().filter(x -> x.getDistanceTravelled() == Long.parseLong(arguments[0])).count();
+            case BY_ENGINE_POWER -> count = 
+                vehicleObservableList.stream().filter(x -> x.getEnginePower() == Integer.parseInt(arguments[0])).count();
+        }
+        this.outputCountLabel.setText(Long.toString(count));
     }
 
     @FXML
