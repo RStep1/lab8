@@ -233,11 +233,13 @@ public class DatabaseCollectionManager {
     public void deleteByKey(long key) throws SQLException {
         try (PreparedStatement preparedStatement = databaseHandler.getPreparedStatement(DELETE_VEHICLE_BY_KEY, false)) {
             preparedStatement.setLong(1, key);
-            if (!preparedStatement.executeQuery().next()) {
-                throw new SQLException();
-            }
+            System.out.println(preparedStatement.executeUpdate());
+            // if (!preparedStatement.executeQuery().next()) {
+            //     throw new SQLException();
+            // }
             Console.println("DELETE_VEHICLE_BY_KEY");
         } catch (SQLException e) {
+            e.printStackTrace();
             Console.println("Failed to delete vehicle by key = " + key);
             throw new SQLException("Failed to delete element from database by key");
         }

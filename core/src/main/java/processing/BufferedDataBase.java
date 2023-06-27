@@ -225,6 +225,19 @@ public class BufferedDataBase {
         return new ServerAnswer(eventType, arguments, tableRowVehicle, true);
     }
 
+    public ServerAnswer remove(ClientRequest clientRequest) {
+        ServerAnswer serverAnswer = new ServerAnswer(EventType.REMOVE, false);
+        switch (clientRequest.getRemoveMode()) {
+            case BY_ENGINE_POWER -> serverAnswer = removeAllByEnginePower(clientRequest);
+            case BY_KEY -> serverAnswer = removeKey(clientRequest);
+            case GREATER_KEY -> serverAnswer = removeGreaterKey(clientRequest);
+            case GREATER_THEN_DISTANCE_TRAVELLED -> serverAnswer = removeGreater(clientRequest);
+            case LOWER_THEN_DISTANCE_TRAVELLED -> serverAnswer = removeLower(clientRequest);
+        }
+        System.out.println(serverAnswer.outputInfo());
+        return serverAnswer;
+    }
+
     /**
      * Removes element by key.
      * @param clientRequest contains the name of the command, its arguments on a single line,

@@ -1,25 +1,28 @@
 package commands;
+
 import data.ClientRequest;
 import processing.BufferedDataBase;
 import utility.ServerAnswer;
 
 /**
- * Acts as a wrapper for the 'exit' command.
+ * Acts as a wrapper for the 'remove greater' command.
  * Calls the method containing the implementation of this command.
  */
-public class CountCommand implements Command {
-    private static final String NAME = "count";
-    private static final String ARGUMENTS = "<comparison value>";
-    private static final String DESCRIPTION = "count elements by some column";
+public class RemoveCommand implements Command {
+    private BufferedDataBase bufferedDataBase;
+    private static final String NAME = "remove";
+    private static final String ARGUMENTS = " <comparison value>";
+    private static final String DESCRIPTION = "remove elements by choosen mode";
     private static final int COUNT_OF_ARGUMENTS = 1;
     private static final int COUNT_OF_EXTRA_ARGUMENTS = 0;
-    
-    public CountCommand() {
+
+    public RemoveCommand(BufferedDataBase bufferedDataBase) {
+        this.bufferedDataBase = bufferedDataBase;
     }
 
     @Override
     public ServerAnswer execute(ClientRequest commandArguments) {
-        return null;
+        return bufferedDataBase.remove(commandArguments);
     }
 
     public static String getName() {

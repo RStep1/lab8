@@ -71,7 +71,7 @@ public class Listener implements Runnable {
                     case INSERT -> databaseWindowController.insertEvnet(serverAnswer);
                     case UPDATE -> databaseWindowController.updateEvent(serverAnswer);
                     case CLEAR -> databaseWindowController.clearEvent(serverAnswer);
-                    case REMOVE -> System.out.println("remove");
+                    case REMOVE -> databaseWindowController.removeEvent(serverAnswer);
                     case QUIT -> System.out.println("quit");
                     case LOGIN -> LoginWindowController.getInstance().loginEvent(serverAnswer);
                     case REGISTER -> LoginWindowController.getInstance().registerEvent(serverAnswer);
@@ -80,7 +80,7 @@ public class Listener implements Runnable {
                 }
             }
         } catch (IOException | NullPointerException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
             if (databaseWindowController != null)
                 databaseWindowController.logoutScene();
         }

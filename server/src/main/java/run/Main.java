@@ -62,7 +62,8 @@ public class Main {
                 new RegisterCommand(bufferedDataBase),
                 new LoginCommand(bufferedDataBase),
                 new QuitCommand(bufferedDataBase),
-                new CountCommand()
+                new CountCommand(),
+                new RemoveCommand(bufferedDataBase)
                 );
         RequestHandler requestHandler = new RequestHandler(invoker);
         Server server = new Server(invoker, port, lock, databaseVersionHandler);

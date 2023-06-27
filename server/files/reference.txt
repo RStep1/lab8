@@ -3,12 +3,13 @@ execute_script <file_name>: reads and executes a script from the specified file.
 show: prints to standard output all elements of the collection in string representation
 clear: clears the collection
 save: save the collection to file
-count: count elements by some column
+count<comparison value>: count elements by some column
 insert <key> <element>: adds a new element with the given key
 update <id> <element>: updates the value of the collection element whose id is equal to the given one
 remove_greater <distanceTravelled>: removes from the collection all elements whose distanceTraveled field value is greater than the specified value
 remove_lower <distanceTravelled>: removes from the collection all elements whose distanceTraveled field value is less than the specified value
 login<login> <password>: user authorization
+remove <comparison value>: remove elements by choosen mode
 help: displays help for available commands
 exit: terminates the program without saving to a file
 filter_less_than_fuel_type <fuelType>: displays elements whose fuelType field value is less than the given one

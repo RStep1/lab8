@@ -22,11 +22,11 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import run.MainLauncher;
+import visualization.snake.Direction;
 
 public class VisualizationWindowController {
 
     private ObservableList<TableRowVehicle> vehicles;
-    private Parent databaseWindow;
     private DatabaseWindowController databaseWindowController;
 
     @FXML
@@ -49,26 +49,11 @@ public class VisualizationWindowController {
         Stage stage = (Stage) closeGameButton.getScene().getWindow();
         databaseWindowController.setIsVisualizing(false);
         stage.close();
-        // Platform.runLater(() -> {
-        //     // FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(MainLauncher.getDatabaseWindowPath()));
-        //     Parent window = databaseWindow;
-        //     // try {
-        //     //     window = (Pane) fxmlLoader.load();
-        //     // } catch (IOException e) {
-        //     //     e.printStackTrace();
-        //     // }
-        //     Stage stage = MainLauncher.getPrimaryStage();
-        //     stage.setWidth(MainLauncher.getSceneWidth());
-        //     stage.setHeight(MainLauncher.getSceneHeight());
-        //     Scene scene = new Scene(window);
-        //     stage.setScene(scene);
-        //     stage.centerOnScreen();
-        // });
     }
 
     @FXML
     public void initialize() {
-
+        
         System.out.println("VIS START");
         scoreLabel.setText("0");
         Platform.runLater(() -> {
@@ -79,7 +64,6 @@ public class VisualizationWindowController {
                 case DOWN, S -> System.out.println("DOWN");
                 case RIGHT, D -> System.out.println("RIGHT");
                 case LEFT, A -> System.out.println("LEFT");
-                case LEFT_PARENTHESIS -> System.out.println("left");
                 default -> System.out.println("another key " + event.getCode() + " " + event.getCharacter());
             }
         });
@@ -92,9 +76,5 @@ public class VisualizationWindowController {
 
     public void setDatabaseWindowController(DatabaseWindowController databaseWindowController) {
         this.databaseWindowController = databaseWindowController;
-    }
-
-    public void setDatabaseWindow(Parent databaseWindow) {
-        this.databaseWindow = databaseWindow;
     }
 }

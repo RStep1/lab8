@@ -8,6 +8,7 @@ import exceptions.WrongAmountOfArgumentsException;
 import mods.EventType;
 import mods.ExecuteMode;
 import mods.MessageType;
+import mods.RemoveMode;
 import utility.*;
 
 import java.io.File;
@@ -178,6 +179,21 @@ public class CommandValidator {
         return isCorrect;
     }
 
+    private boolean validateRemoveCommand(ClientRequest clientRequest) {
+        RemoveMode removeMode = clientRequest.getRemoveMode();
+        if (removeMode == null) {
+            MessageHolder.putMessage("You have to choose the filter ", MessageType.USER_ERROR);
+            return false;
+        }
+        boolean isCorrect = false;
+        switch (removeMode) {
+            case BY_ENGINE_POWER -> isCorrect = validateEnginePower(clientRequest);
+            case BY_KEY, GREATER_KEY -> isCorrect = validateKey(clientRequest);
+            case GREATER_THEN_DISTANCE_TRAVELLED, LOWER_THEN_DISTANCE_TRAVELLED -> validateDistanceTravelled(clientRequest);
+        }
+        return isCorrect;
+    }
+
     private boolean validateArguments(ClientRequest clientRequest) {
         boolean isCorrect;
         switch (clientRequest.getCommandName()) {
@@ -192,6 +208,7 @@ public class CommandValidator {
             case "quit" -> isCorrect = checkNumberOfArguments(clientRequest, 0);
             case "count" -> isCorrect = validateCountCommand(clientRequest);
             case "filter" -> isCorrect = validateFilterCommand(clientRequest);
+            case "remove" -> isCorrect = validateRemoveCommand(clientRequest);
             default -> {
                 MessageHolder.putMessage(String.format(
                         "'%s': No such command", clientRequest.getCommandName()), MessageType.USER_ERROR);

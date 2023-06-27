@@ -417,7 +417,33 @@ public class DatabaseWindowController {
 
     @FXML
     public void onRemoveButtonClick(ActionEvent event) {
+        CommandValidator commandValidator = new CommandValidator();
+        String[] arguments = new String[1];
+        arguments[0] = this.valueToRemove.getText();
+        RemoveMode removeMode = ModeConverter.GET_REMOVE_MODE.apply(removeByChoiceBox.getValue());
+        ClientRequest clientRequest = new ClientRequest("remove", arguments, removeMode, LoginWindowController.getInstance().getUser());
+        if (!commandValidator.validate(clientRequest)) {
+            AlertCaller.errorAlert(MessageHolder.getMessages(MessageType.USER_ERROR));
+            MessageHolder.clearMessages(MessageType.USER_ERROR);
+            return;
+        }
+        try {
+            Listener.sendRequest(clientRequest);
+        } catch (IOException e) {
+            AlertCaller.showErrorDialog("Connection lost", "Please check for firewall issues and check if the server is running.");
+            Console.println("Connection lost");
+        }
         Console.println("remove");
+    }
+
+
+    public void removeEvent(ServerAnswer serverAnswer) {
+        if (!serverAnswer.commandExitStatus()) {
+            AlertCaller.errorAlert(MessageHolder.getMessages(MessageType.USER_ERROR));
+            MessageHolder.clearMessages(MessageType.USER_ERROR);
+            return;
+        }
+        System.out.println("remove event");
     }
 
     @FXML
