@@ -12,7 +12,6 @@ import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
-import java.util.Observable;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TreeSet;
@@ -59,6 +58,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import javafx.stage.Window;
+import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 import mods.ExecuteMode;
 import mods.MessageType;
@@ -82,6 +83,8 @@ public class DatabaseWindowController {
     private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(datePattern);
     private volatile FilterMode currentFilterMode;
     private volatile String currentFilterValue;
+    private volatile boolean isVisualizing = false;
+    private Stage gameStage;
 
     @FXML
     private TableColumn<TableRowVehicle, String> creationDateColumn;
@@ -337,16 +340,24 @@ public class DatabaseWindowController {
 
     @FXML
     public void onVisualizeButtonClick(ActionEvent event) {
+        if (isVisualizing == true) {
+            return;
+        }
         try {
-            Stage stage = new Stage();
+            // Stage stage = MainLauncher.getPrimaryStage();
+            gameStage = new Stage();
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(MainLauncher.getVisualizationWindowPath()));
-            Parent root = fxmlLoader.load();
-            stage.setTitle("Snake game");
+            Parent gameWindow = fxmlLoader.load();
+            gameStage.setTitle("Snake game");
             // stage.getIcons().add(new Image());
-            Scene snakeScene = new Scene(root, MainLauncher.getSceneHeight(), MainLauncher.getSceneHeight());
-            stage.centerOnScreen();
-            stage.setScene(snakeScene);
-            stage.show();
+            VisualizationWindowController visualizationWindowController = fxmlLoader.<VisualizationWindowController>getController();
+            visualizationWindowController.setCollection(vehicleObservableList);
+            visualizationWindowController.setDatabaseWindowController(this);
+            Scene snakeScene = new Scene(gameWindow, MainLauncher.getSceneHeight(), MainLauncher.getSceneHeight());
+            gameStage.centerOnScreen();
+            gameStage.setScene(snakeScene);
+            isVisualizing = true;
+            gameStage.show();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -419,6 +430,8 @@ public class DatabaseWindowController {
 
     public void logoutScene() {
         Platform.runLater(() -> {
+            if (gameStage != null)
+                gameStage.close();
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(MainLauncher.getLoginWindowPahth()));
             Parent window = null;
             try {
@@ -558,5 +571,9 @@ public class DatabaseWindowController {
             vehicleTypeChoice.getItems().add(vehicleType.toString());
         for (FuelType fuelType : FuelType.values())
             fuelTypeChoice.getItems().add(fuelType.toString());
+    }
+
+    public void setIsVisualizing(boolean value) {
+        this.isVisualizing = value;
     }
 }

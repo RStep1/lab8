@@ -49,7 +49,7 @@ public class ClientHandler implements Runnable {
 
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
             System.out.println("Client disconnection");
         } finally {
             try {
