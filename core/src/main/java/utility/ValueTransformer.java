@@ -51,12 +51,12 @@ public class ValueTransformer {
     public static final Function<String, FuelType> SET_FUEL_TYPE = (newFuelType) -> {
         FuelType fuelType = FuelType.ALCOHOL;
         try {
-            int serialNumber = Integer.parseInt(newFuelType);
+            int serialNumber = Integer.parseInt(newFuelType.toUpperCase());
             for (FuelType type : FuelType.values())
                 if (type.getSerialNumber() == serialNumber)
                     fuelType = type;
         } catch (NumberFormatException e) {
-            fuelType = FuelType.valueOf(newFuelType);
+            fuelType = FuelType.valueOf(newFuelType.toUpperCase());
         }
         return fuelType;
     };
