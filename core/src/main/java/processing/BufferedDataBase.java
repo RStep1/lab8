@@ -127,6 +127,11 @@ public class BufferedDataBase {
      * @return Command exit status.
      */
     public ServerAnswer insert(ClientRequest clientRequest) {
+        if (clientRequest.getArguments() == null) {
+            String[] arguments = generateKey();
+            clientRequest.setArguments(arguments);
+            return addElementBy(clientRequest, AddMode.INSERT_MODE);
+        }
         if (identifierHandler.hasElementWithKey(clientRequest.getArguments()[0], true,
                     InsertCommand.getName() + " " + clientRequest.getArguments()[0])) {
             return new ServerAnswer(EventType.INSERT, false);
@@ -134,6 +139,14 @@ public class BufferedDataBase {
         if (clientRequest.getExtraArguments() == null)
             return new ServerAnswer(EventType.INSERT, true);
         return addElementBy(clientRequest, AddMode.INSERT_MODE);
+    }
+
+    private String[] generateKey() {
+        String[] argumenst = new String[1];
+        do {
+            argumenst[0] = Long.toString((long) (Math.random() * 999999999 + 1));
+        } while(database.containsKey(Long.parseLong(argumenst[0])));
+        return argumenst;
     }
 
     /**

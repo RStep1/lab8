@@ -53,13 +53,8 @@ public class FoodGenarator {
         vehicleValues[4] = Long.toString((long) Math.floor(Math.random() * (Long.MAX_VALUE - 1) + 1)); //distance travelled
         vehicleValues[5] = Integer.toString((int) Math.floor(Math.random() * (VehicleType.values().length) + 1)); // vehicle type
         vehicleValues[6] = Integer.toString((int) Math.floor(Math.random() * (FuelType.values().length) + 1)); //fuel type
-        // for (int i = 0; i < 7; i++) {
-        //     System.out.print(vehicleValues[i] + " ");
-        // }
-        // System.out.println();
         return vehicleValues;
     }
-
 
     private String generateVehicleName() {
         int length = (int) Math.random() * MAX_NAME_LENGTH + MIN_NAME_LENGTH;

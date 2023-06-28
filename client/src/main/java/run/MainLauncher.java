@@ -77,5 +77,9 @@ public class MainLauncher extends Application {
     public static double getSceneHeight() {
         return SCENE_HEIGHT;
     }
+
+    public static String getDatabaseLogoIcon() {
+        return DATABASE_LOGO_ICON_PATH;
+    }
     
 }

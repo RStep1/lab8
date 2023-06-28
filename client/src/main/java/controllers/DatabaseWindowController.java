@@ -75,6 +75,7 @@ import utility.MessageHolder;
 import utility.ServerAnswer;
 import utility.ValueHandler;
 import utility.ValueTransformer;
+import visualization.SnakeGame;
 
 public class DatabaseWindowController {
     private ObservableList<TableRowVehicle> vehicleObservableList;
@@ -277,7 +278,7 @@ public class DatabaseWindowController {
         }
     }
 
-    public void insertEvnet(ServerAnswer serverAnswer) {
+    public void insertEvent(ServerAnswer serverAnswer) {
         if (!serverAnswer.commandExitStatus()) {
             AlertCaller.errorAlert(MessageHolder.getMessages(MessageType.USER_ERROR));
             MessageHolder.clearMessages(MessageType.USER_ERROR);
@@ -340,26 +341,29 @@ public class DatabaseWindowController {
 
     @FXML
     public void onVisualizeButtonClick(ActionEvent event) {
-        if (isVisualizing == true) {
-            return;
-        }
-        try {
-            gameStage = new Stage();
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(MainLauncher.getVisualizationWindowPath()));
-            Parent gameWindow = fxmlLoader.load();
-            gameStage.setTitle("Snake game");
-            // stage.getIcons().add(new Image());
-            VisualizationWindowController visualizationWindowController = fxmlLoader.<VisualizationWindowController>getController();
-            visualizationWindowController.setCollection(vehicleObservableList);
-            visualizationWindowController.setDatabaseWindowController(this);
-            Scene snakeScene = new Scene(gameWindow, MainLauncher.getSceneHeight(), MainLauncher.getSceneHeight());
-            gameStage.centerOnScreen();
-            gameStage.setScene(snakeScene);
-            isVisualizing = true;
-            gameStage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        SnakeGame snakeGame = new SnakeGame();
+        snakeGame.start();
+
+        // if (isVisualizing == true) {
+        //     return;
+        // }
+        // try {
+        //     gameStage = new Stage();
+        //     FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(MainLauncher.getVisualizationWindowPath()));
+        //     Parent gameWindow = fxmlLoader.load();
+        //     gameStage.setTitle("Snake game");
+        //     // stage.getIcons().add(new Image());
+        //     VisualizationWindowController visualizationWindowController = fxmlLoader.<VisualizationWindowController>getController();
+        //     visualizationWindowController.setCollection(vehicleObservableList);
+        //     visualizationWindowController.setDatabaseWindowController(this);
+        //     Scene snakeScene = new Scene(gameWindow, MainLauncher.getSceneHeight(), MainLauncher.getSceneHeight());
+        //     gameStage.centerOnScreen();
+        //     gameStage.setScene(snakeScene);
+        //     isVisualizing = true;
+        //     gameStage.show();
+        // } catch (IOException e) {
+        //     e.printStackTrace();
+        // }
     }
 
     @FXML
@@ -517,7 +521,8 @@ public class DatabaseWindowController {
         ownerColumn.setCellValueFactory(new PropertyValueFactory<TableRowVehicle, String>("owner"));
 
         bufferedVehicles.addAll(vehicleObservableList);
-        vehicleTable.setItems(vehicleObservableList.sorted());
+        vehicleObservableList.sort((tuple1, tuple2) -> (int) (tuple1.getId() - tuple2.getId()));
+        vehicleTable.setItems(vehicleObservableList);
         vehicleTable.refresh();
         this.tableRecordsLabel.setText(Integer.toString(vehicleHashtable.size()));
         this.initializationTimeLabel.setText(ZonedDateTime.now().format(dateFormatter));

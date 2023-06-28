@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
@@ -42,10 +43,16 @@ public class DatabaseVersionHandler {
         }
         Iterator<Socket> socketIterator = socketList.iterator();
         while(socketIterator.hasNext()) {
-            Socket socket = socketIterator.next();
+            Socket socket = null;
+            try {
+                socket = socketIterator.next();
+            } catch (ConcurrentModificationException e) {
+                e.printStackTrace();
+                System.out.println("socketList: " + socketList.size() + " " + socket);
+            }
             if (socket.isClosed()) {
                 socketList.remove(socket);
-                // System.out.println("removing closed socket");
+                System.out.println("removing closed socket");
             }
         }
         lock.unlock();

@@ -9,7 +9,7 @@ import java.util.Arrays;
 
 public class ClientRequest implements Serializable {
     private final String commandName;
-    private final String[] arguments;
+    private String[] arguments;
     private String[] extraArguments;
     private RemoveMode removeMode;
     private CountMode countMode;
@@ -113,6 +113,10 @@ public class ClientRequest implements Serializable {
 
     public void setExtraArguments(String[] extraArguments) {
         this.extraArguments = extraArguments;
+    }
+
+    public void setArguments(String[] arguments) {
+        this.arguments = arguments;
     }
 
     @Override

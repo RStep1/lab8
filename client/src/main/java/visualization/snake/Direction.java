@@ -1,8 +1,8 @@
 package visualization.snake;
 
 public enum Direction {
-    UP(0, 1),
-    DOWN(0, -1),
+    UP(0, -1),
+    DOWN(0, 1),
     RIGHT(1, 0),
     LEFT(-1, 0);
     
@@ -13,7 +13,6 @@ public enum Direction {
         this.moveX = moveX;
         this.moveY = moveY;
     }
-
 
     public int getMoveX() {
         return moveX;
